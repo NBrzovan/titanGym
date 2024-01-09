@@ -1,6 +1,6 @@
 <template>
   <div>
-    Login
+    Klijenti
   </div>
 </template>
 

@@ -13,17 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome'); 
-});
-
-/*
-    Login
-*/
-Route::get('/login', function () {
-    return view('auth.login'); 
-});
-
-Route::get('/error', function () {
-    return view('pages.errors.error-404'); 
-});
+Route::get('/{any}', function () {
+    return view('welcome');
+})->where('any', '.*');

@@ -3,6 +3,6 @@
 <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
-<title>@yield('title', 'Laravel App')</title>
+<title>@yield('title', 'Titan Gym')</title>
 <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
