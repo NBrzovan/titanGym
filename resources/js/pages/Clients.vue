@@ -1,11 +1,11 @@
 <template>
   <div class="content-wrapper">
             <div class="page-header">
-              <h3 class="page-title"> Basic Tables </h3>
+              <h3 class="page-title"> Clients Table </h3>
               <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                   <li class="breadcrumb-item"><a href="#">Tables</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Basic tables</li>
+                  <li class="breadcrumb-item active" aria-current="page">Clients Table</li>
                 </ol>
               </nav>
             </div>
@@ -13,17 +13,17 @@
               <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                    <h4 class="card-title">Striped Table</h4>
+                    <h4 class="card-title">Clients</h4>
                     <p class="card-description"> Add class <code>.table-striped</code>
                     </p>
                     <table class="table table-striped">
                       <thead>
                         <tr>
-                          <th> User </th>
-                          <th> First name </th>
-                          <th> Progress </th>
-                          <th> Amount </th>
-                          <th> Deadline </th>
+                          <th> Korisnik </th>
+                          <th> Ime i prezime </th>
+                          <th> Email </th>
+                          <th> Statuss </th>
+                          <th> Mesec </th>
                         </tr>
                       </thead>
                       <tbody>
