@@ -12,10 +12,13 @@ use Illuminate\Support\Facades\Log;
 class AuthService {
 
     public function login($request) {
-        Log::info('Pozivam login funkciju');
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
+        ], [
+            'email.required' => 'Morate uneti e-mail adresu.',
+            'email.email' => 'Unesite validnu e-mail adresu.',
+            'password.required' => 'Morate uneti lozinku.',
         ]);
     
         if ($validator->fails()) {
@@ -26,10 +29,10 @@ class AuthService {
     
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'Invalid credentials']);
+                return response()->json(['error' => 'Uneli ste pogrešne podatke']);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Could not create token'], 500);
+            return response()->json(['error' => 'Token nije kreiran'], 500);
         }
     
         $user = User::where('email', $request->email)->first();
@@ -37,7 +40,7 @@ class AuthService {
         Session::put('token', $token);
     
         return response()->json([
-            'success' => 'You have successfully logged in!',
+            'success' => 'Uspešno ste se ulogovali!',
             'user' => $user,
             'token' => $token
         ]);

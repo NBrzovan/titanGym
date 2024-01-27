@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer">
+  <footer v-if="auth" class="footer">
     <div class="footer-inner-wraper">
       <div class="d-sm-flex justify-content-center justify-content-sm-between">
         <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
@@ -13,7 +13,7 @@
 export default {
   data() {
     return {
-      // Vaši podaci idu ovde
+      auth: localStorage.getItem('token') ? localStorage.getItem('token') : null
     };
   },
   methods: {

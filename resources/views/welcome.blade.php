@@ -23,5 +23,20 @@
         <script src="../../assets/js/off-canvas.js"></script>
         <script src="../../assets/js/hoverable-collapse.js"></script>
         <script src="../../assets/js/misc.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Provera da li postoji token u local storage-u
+                var token = localStorage.getItem('token');
+        
+                // Ako nema tokena, ukloni sve klase sa odgovarajućih elemenata
+                if (!token) {
+                    var pageBodyWrapper = document.querySelector('.page-body-wrapper');
+                    var mainPanel = document.querySelector('.main-panel');
+        
+                    pageBodyWrapper.removeAttribute('class');
+                    mainPanel.removeAttribute('class');
+                }
+            });
+        </script>
     </body>
 </html>

@@ -1,5 +1,5 @@
 <template>
-  <nav class="sidebar sidebar-offcanvas" id="sidebar">
+  <nav v-if="auth" class="sidebar sidebar-offcanvas" id="sidebar">
           <ul class="nav">
             <li class="nav-item nav-category">Main</li>
             <li class="nav-item">
@@ -33,7 +33,7 @@
             </li>
             <li class="nav-item sidebar-user-actions">
               <div class="sidebar-user-menu">
-                <a href="#" class="nav-link"><i class="mdi mdi-logout menu-icon"></i>
+                <a @click="logout" style="cursor: pointer" class="nav-link"><i class="mdi mdi-logout menu-icon"></i>
                   <span class="menu-title">Log Out</span></a>
               </div>
             </li>
@@ -42,14 +42,24 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
-      // Vaši podaci idu ovde
+      auth: localStorage.getItem('token') ? localStorage.getItem('token') : null
     };
   },
   methods: {
-    // Vaše metode idu ovde
+    async logout() {
+      await axios.post('api/login')
+              .then(() => {
+                localStorage.removeItem('token');
+                window.location.href = '/';    
+            }).catch((error) => {
+                console.log(error);
+            });
+    }
   },
   computed: {
     // Vaše computed svojstva idu ovde
