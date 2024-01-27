@@ -12,7 +12,7 @@ const router = createRouter({
 
 
 const app = createApp({});
-
+app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith('ion-'); 
 app.component('sidebar-component', Sidebar);
 app.component('navbar-component', Navbar);
 app.component('footer-component', Footer);

@@ -14,5 +14,8 @@ Route::get('/clients', [ClientController::class, 'index']);
 Route::get('/clients/{id}', [ClientController::class, 'show']);
 Route::put('/clients/{id}', [ClientController::class, 'update']);
 Route::delete('/clients/{id}', [ClientController::class, 'destroy']);
+Route::post('/clients/add', [ClientController::class, 'store']);
+Route::post('/membershipFee/clients/{id}', [ClientController::class, 'clientMembershipFee']);
+
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);

@@ -10,6 +10,12 @@ class FeeRecords extends Model
     use HasFactory;
 
     protected $table = 'feeRecords';
+    protected $fillable = [
+        'clientID',
+        'dateOfPayment',
+        'dateExpiry',
+        'membershipFee',
+    ];
 
     public function client()
     {

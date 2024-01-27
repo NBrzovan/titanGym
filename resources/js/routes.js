@@ -1,5 +1,6 @@
 import Login from './pages/Login.vue';
 import Clients from './pages/Clients.vue';
+import Client from './pages/Client.vue';
 
 const routes = [
   {
@@ -11,6 +12,11 @@ const routes = [
     path: '/clients',
     component: Clients,
     name: 'clients',
+  },
+  {
+    path: '/client/:id',
+    component: Client,
+    name: 'client',
   },
 ];
 

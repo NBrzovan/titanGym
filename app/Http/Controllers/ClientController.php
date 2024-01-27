@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
-    public function index()
-    {
-        $clientsData = Client::getAllClients();
-
+    public function index(Request $request)
+    {   
+        $searchQuery = $request->input('search');
+        $clientsData = Client::getAllClients($searchQuery);
+        
         return response()->json($clientsData);
     }
 
@@ -21,11 +22,12 @@ class ClientController extends Controller
             return response()->json(['message' => 'Client not found'], 404);
         }
 
-        return response()->json($client);
+        return response()->json($client->toArray());
     }
 
     public function update(Request $request, $id)
     {
+    
         $client = Client::updateClient($id, $request->all());
 
         if (!$client) {
@@ -44,5 +46,16 @@ class ClientController extends Controller
         }
 
         return response()->json(['message' => 'Client successfully deleted']);
+    }
+
+    public function store(Request $request)
+    {
+        $client = Client::addClient($request);
+    }
+
+    public function clientMembershipFee(Request $request, $id) {
+        
+        $membershipFee = Client::setMembershipFeeForClient($request, $id);
+        
     }
 }
