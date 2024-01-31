@@ -30,17 +30,23 @@ class Client extends Model
                     ->orWhere('lastName', 'LIKE', '%' . $searchQuery . '%');
             });
         }
+
         $query->select('client.*', 'feerecords.membershipFee as membershipFee', 'feerecords.dateOfPayment as dateOfPayment', 'feerecords.dateExpiry as dateExpiry')
-          ->leftJoin('feerecords', 'client.id', '=', 'feerecords.clientID');
+            ->leftJoin('feerecords', function ($join) {
+                $join->on('client.id', '=', 'feerecords.clientID')
+                    ->whereRaw('feerecords.id = (SELECT MAX(id) FROM feerecords WHERE clientID = client.id)');
+            });
 
         return $query->get();
     }
 
     public static function getClient($id){        
-        return self::leftJoin('feerecords', 'client.id', '=', 'feerecords.clientID')
+        $clientData = self::leftJoin('feerecords', 'client.id', '=', 'feerecords.clientID')
         ->where('client.id', $id)
-        ->select('client.*', 'feerecords.membershipFee as membershipFee')
+        ->select('client.*', 'feerecords.membershipFee as membershipFee', 'feerecords.dateOfPayment', 'feerecords.dateExpiry')
         ->first();
+
+        return $clientData;
     }
 
     public function updateClient($id, $data){
@@ -134,5 +140,14 @@ class Client extends Model
         }else{
             return response()->json(['message' => 'Greška'], 500);
         }
+    }
+
+    public function getClientReview($id){
+        $clientData = self::leftJoin('feerecords', 'client.id', '=', 'feerecords.clientID')
+        ->where('client.id', $id)
+        ->select('client.*', 'feerecords.membershipFee as membershipFee', 'feerecords.dateOfPayment as dateOfPayment', 'feerecords.dateExpiry as dateExpiry')
+        ->get();
+
+        return $clientData;
     }
 }

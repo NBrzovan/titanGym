@@ -47,18 +47,32 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      auth: localStorage.getItem('token') ? localStorage.getItem('token') : null
+      auth: localStorage.getItem('token') ? localStorage.getItem('token') : null,
+      user : ''
     };
+  },
+  mounted() {
+    this.currentUser();
   },
   methods: {
     async logout() {
-      await axios.post('api/login')
+      await axios.post('api/logout')
               .then(() => {
                 localStorage.removeItem('token');
                 window.location.href = '/';    
             }).catch((error) => {
-                console.log(error);
+               
             });
+    },
+   
+    currentUser(){
+      axios.get('/api/currentUser')
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(error => {
+          
+        });
     }
   },
   computed: {

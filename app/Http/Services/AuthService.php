@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class AuthService {
 
@@ -26,7 +27,7 @@ class AuthService {
         }
     
         $credentials = $request->only('email', 'password');
-    
+        
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'Uneli ste pogrešne podatke']);
@@ -34,10 +35,13 @@ class AuthService {
         } catch (JWTException $e) {
             return response()->json(['error' => 'Token nije kreiran'], 500);
         }
+        
+        $user = Auth::user();
+        dump($user);   
+        session(['token' => $token, 'id' => $user->id]);
     
-        $user = User::where('email', $request->email)->first();
-    
-        Session::put('token', $token);
+        $sessionLifetimeInMinutes = 720;
+        config(['session.lifetime' => $sessionLifetimeInMinutes]);
     
         return response()->json([
             'success' => 'Uspešno ste se ulogovali!',

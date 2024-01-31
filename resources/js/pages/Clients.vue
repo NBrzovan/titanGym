@@ -338,7 +338,6 @@ export default {
           }
       })
       .then(response => {
-        console.log(response.data);
         this.clients = response.data;
       })
       .catch(error => {
@@ -382,7 +381,6 @@ export default {
     editAction(clientId) {
         axios.get('/api/clients/'+clientId)
         .then(response => {
-          console.log(response.data);
           this.firstName = response.data.firstName;
           this.lastName = response.data.lastName;
           this.email = response.data.email;
@@ -412,7 +410,6 @@ export default {
           membershipFeeRecord : this.membershipFeeRecord
         })
         .then(response => {
-          console.log(response)
           this.showSuccessAlert("Uspešno evidentirano" ,"Uspešno ste evidentirali članarinu!");
         })
         .catch(error => {
@@ -478,10 +475,8 @@ export default {
     },
 
     deleteAction(clientId) {
-      console.log("Delete action clicked for client with ID:", clientId);
       axios.get('/api/clients/'+clientId)
         .then(response => {
-          console.log(response.data);
           this.firstNameDelete = response.data.firstName;
           this.lastNameDelete = response.data.lastName;
         })
@@ -541,11 +536,11 @@ export default {
       }
 
       if (!this.createmembershipFee || this.createmembershipFee.trim() === "") {
-        this.validationErrors.createmembershipFee = "Polje Članarina (RSD) ne sme biti prazno.";
-        isValid = false;
-      }else if(isNaN(createmembershipFee) || createmembershipFee < 0 || createmembershipFee > 100000){
-        this.validationErrors.createmembershipFee = "Unesite validan iznos od 0 do 100000";
-        isValid = false;
+          this.validationErrors.createmembershipFee = "Polje Članarina (RSD) ne sme biti prazno.";
+          isValid = false;
+      }else if(isNaN(this.createmembershipFee) || this.createmembershipFee < 0 || this.createmembershipFee > 100000){
+          this.validationErrors.createmembershipFee = "Unesite validan iznos od 0 do 100000";
+          isValid = false;
       }else {
           this.validationErrors.createmembershipFee = null;
       }
@@ -599,7 +594,7 @@ export default {
       if (!this.membershipFee || this.membershipFee.trim() === "") {
         this.validationErrorsEdit.membershipFee = "Polje Članarina (RSD) ne sme biti prazno.";
         isValid = false;
-      }else if(isNaN(membershipFee) || membershipFee < 0 || membershipFee > 100000){
+      }else if(isNaN(this.membershipFee) || this.membershipFee < 0 || this.membershipFee > 100000){
         this.validationErrorsEdit.membershipFee = "Unesite validan iznos od 0 do 100000";
         isValid = false;
       } else {
@@ -669,7 +664,6 @@ export default {
     },
 
     closeModal(modalName){
-      console.log(modalName);
       $(`#${modalName}`).modal('hide');
       this.clearModal();
     }

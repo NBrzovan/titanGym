@@ -53,9 +53,9 @@ class ClientController extends Controller
         $client = Client::addClient($request);
     }
 
-    public function clientMembershipFee(Request $request, $id) {
+    public function clientReview($id){
+        $client = Client::getClientReview($id);
         
-        $membershipFee = Client::setMembershipFeeForClient($request, $id);
-        
+        return $client;
     }
 }
