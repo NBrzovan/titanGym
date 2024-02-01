@@ -23,4 +23,4 @@ Route::post('/membershipFee/clients/{id}', [FeeRecordsController::class, 'record
 Route::get('/currentUser', [AuthController::class, 'currentUser']);
 
 Route::post('login', [AuthController::class, 'login']);
-Route::post('logout', [AuthController::class, 'logout']);
+Route::get('logout', [AuthController::class, 'logout']);

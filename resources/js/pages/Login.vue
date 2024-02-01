@@ -59,6 +59,7 @@ export default {
           }
           else {                                                                      
               localStorage.setItem('token', response.data.token);
+              localStorage.setItem('userName', response.data.userName);
               window.location.href = '/clients';
           }
           

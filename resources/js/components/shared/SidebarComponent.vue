@@ -23,7 +23,7 @@
                         <!-- <img src="../../assets/images/faces/face28.png" alt="image"> -->
                       </div>
                       <div class="sidebar-profile-text">
-                        <p class="mb-1">Henry Klein</p>
+                        <p class="mb-1">{{ userName ? userName : null }}</p>
                       </div>
                     </div>
                   </div>
@@ -48,7 +48,7 @@ export default {
   data() {
     return {
       auth: localStorage.getItem('token') ? localStorage.getItem('token') : null,
-      user : ''
+      userName: localStorage.getItem('userName') ? localStorage.getItem('userName') : null,
     };
   },
   mounted() {
@@ -56,13 +56,13 @@ export default {
   },
   methods: {
     async logout() {
-      await axios.post('api/logout')
+      await axios.get('api/logout')
               .then(() => {
                 localStorage.removeItem('token');
                 window.location.href = '/';    
-            }).catch((error) => {
-               
-            });
+              }).catch((error) => {
+                  
+              });
     },
    
     currentUser(){

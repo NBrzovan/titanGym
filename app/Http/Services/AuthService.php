@@ -36,16 +36,15 @@ class AuthService {
             return response()->json(['error' => 'Token nije kreiran'], 500);
         }
         
-        $user = Auth::user();
-        dump($user);   
-        session(['token' => $token, 'id' => $user->id]);
-    
-        $sessionLifetimeInMinutes = 720;
-        config(['session.lifetime' => $sessionLifetimeInMinutes]);
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) $userName = $user->name;
+
+        Session::put('token', $token);
     
         return response()->json([
             'success' => 'Uspešno ste se ulogovali!',
-            'user' => $user,
+            'userName' => $userName,
             'token' => $token
         ]);
     }
