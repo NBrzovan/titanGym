@@ -1,17 +1,17 @@
 <template>
   <nav v-if="auth" class="sidebar sidebar-offcanvas" id="sidebar">
           <ul class="nav">
-            <li class="nav-item nav-category">Main</li>
-            <li class="nav-item">
+            <li class="nav-item nav-category">Menu</li>
+            <!-- <li class="nav-item">
               <router-link to="" class="nav-link">
                 <span class="icon-bg"><i class="mdi mdi-account-multiple"></i></span>
                 <span class="menu-title">Admin panel</span>
               </router-link>
-            </li>
+            </li> -->
             <li class="nav-item">
               <router-link to="/clients" class="nav-link">
                 <span class="icon-bg"><i class="mdi mdi-account-multiple"></i></span>
-                <span class="menu-title">Korisnici</span>
+                <span class="menu-title">Klijenti</span>
               </router-link>
             </li>
             <li class="nav-item sidebar-user-actions">
@@ -52,7 +52,7 @@ export default {
     };
   },
   mounted() {
-    this.currentUser();
+    // this.currentUser();
   },
   methods: {
     async logout() {

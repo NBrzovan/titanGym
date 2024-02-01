@@ -18,25 +18,27 @@
               <div class="search-field d-xl-block">
                   <form class="d-flex align-items-center">
                     <div class="input-group">
-                        <div class="input-group-prepend bg-transparent">
-                            <i class="input-group-text border-0 mdi mdi-magnify"></i>
+                        <div class="input-group bg-transparent">
+                          <i class="input-group-text border-0 mdi mdi-magnify"></i>
+                          <input v-model="searchClientQuery" 
+                                @keyup="onSearchInput"
+                                type="text" 
+                                class="form-control bg-transparent border-0" 
+                                id="searchClient" 
+                                name="searchClient" 
+                                placeholder="Pretraži klijenta">
                         </div>
-                        <input v-model="searchClientQuery" 
-                              @keyup="onSearchInput"
-                              type="text" 
-                              class="form-control bg-transparent border-0" 
-                              id="searchClient" 
-                              name="searchClient" 
-                              placeholder="Pretraži korisnika">
                     </div>
                 </form>
               </div>
-              <a @click="openCreateModal()" class="btn btn-primary" href="#"><i class="mdi mdi-account-plus"></i> Dodaj korisnika</a>
+              <button @click="openCreateModal()" class="btn colorBackground text-dark btn-sm" href="#">
+                <i class="mdi mdi-account-plus mt-2"></i> Dodaj klijenta
+              </button>
             </div>
             <table class="table table-striped">
               <thead>
                 <tr>
-                  <th> Korisnik </th>
+                  <th> Klijent </th>
                   <th> Ime i prezime </th>
                   <th> Plaćeni period </th>
                   <th> Iznos članarina (RSD) </th>
@@ -50,22 +52,22 @@
                     <img :src="getGenderImage(client.gender, client.id)" alt="Gender Image" />
                   </td>
                   <td> 
-                    <router-link :to="'/client/' + client.id">
+                    <router-link class="text-decoration-none rlFullName" :to="'/client/' + client.id">
                       {{ client.firstName }} {{ client.lastName }}
                     </router-link>
                   </td>
                   <td>{{ paidPeriod(client.dateOfPayment) }} - {{ paidPeriod(client.dateExpiry) }}</td>
                   <td>{{ client.membershipFee }}</td>
-                  <td>{{ client.status }}</td>
+                  <td :class="{'text-success': new Date() <= new Date(client.dateExpiry), 'text-danger': new Date() > new Date(client.dateExpiry)}">{{ new Date() > new Date(client.dateExpiry) ? 'Neaktivan' : 'Aktivan' }}</td>
                   <th>
                     <div class="dropdown">
-                    <button type="button" class="btn btn-dark dropdown-toggle" id="dropdownMenuIconButton7" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-dark dropdown-toggle colorText" id="dropdownMenuIconButton7" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="mdi mdi-account"></i>
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton7">
-                      <a @click="openMembershipFeeModal(client.id)" class="dropdown-item" href="#"><i class="mdi mdi-coin"></i> Članarina </a>
-                      <a @click="openEditModal(client.id)" class="dropdown-item" href="#"><i class="mdi mdi-tooltip-edit"></i> Izmeni </a>
-                      <a @click="openDeleteModal(client.id)" class="dropdown-item" href="#"><i class="mdi mdi-delete"></i> Obriši </a>
+                      <a @click="openMembershipFeeModal(client.id)" class="dropdown-item actionH" href="#"><i class="mdi mdi-coin"></i> Članarina </a>
+                      <a @click="openEditModal(client.id)" class="dropdown-item actionH" href="#"><i class="mdi mdi-tooltip-edit"></i> Izmeni </a>
+                      <a @click="openDeleteModal(client.id)" class="dropdown-item actionH" href="#"><i class="mdi mdi-delete"></i> Obriši </a>
                     </div>
                   </div>
                   </th>
@@ -83,20 +85,20 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="createClientModalLabel">Dodavanje korisnika</h5>
+          <h5 class="modal-title" id="createClientModalLabel">Dodavanje klijenta</h5>
           <a href="#" @click="closeModal('createClientModal')" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></a>
         </div>
         <div class="modal-body">
           <form class="forms-sample">
               <div class="form-group row">
-                <label for="firstName" class="col-sm-3 col-form-label">Ime korisnika</label>
+                <label for="firstName" class="col-sm-3 col-form-label">Ime klijenta</label>
                 <div class="col-sm-9">
                   <input type="text" v-model="createFirstName" class="form-control" id="createFirstName" name="createFirstName" placeholder="Ime">
                   <small class="text-danger" v-if="validationErrors.createFirstName">{{ validationErrors.createFirstName }}</small>
                 </div>
               </div>
                 <div class="form-group row">
-                <label for="lastName" class="col-sm-3 col-form-label">Prezime korisnika</label>
+                <label for="lastName" class="col-sm-3 col-form-label">Prezime klijenta</label>
                 <div class="col-sm-9">
                   <input type="text" v-model="createLastName" class="form-control" id="createLastName" name="createLastName" placeholder="Prezime">
                   <small class="text-danger" v-if="validationErrors.createLastName">{{ validationErrors.createLastName }}</small>
@@ -156,20 +158,20 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="editClientModalLabel">Izmena korisnika</h5>
+          <h5 class="modal-title" id="editClientModalLabel">Izmena klijenta</h5>
           <a href="#" @click="closeModal('editClientModal')" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></a>
         </div>
         <div class="modal-body">
           <form class="forms-sample">
               <div class="form-group row">
-                <label for="firstName" class="col-sm-3 col-form-label">Ime korisnika</label>
+                <label for="firstName" class="col-sm-3 col-form-label">Ime klijenta</label>
                 <div class="col-sm-9">
                   <input type="text" v-model="firstName" class="form-control" id="firstName" name="firstName" placeholder="Ime">
                   <small class="text-danger" v-if="validationErrorsEdit.firstName">{{ validationErrorsEdit.firstName }}</small>
                 </div>
               </div>
                 <div class="form-group row">
-                <label for="lastName" class="col-sm-3 col-form-label">Prezime korisnika</label>
+                <label for="lastName" class="col-sm-3 col-form-label">Prezime klijenta</label>
                 <div class="col-sm-9">
                   <input type="text" v-model="lastName" class="form-control" id="lastName" name="lastName" placeholder="Prezime">
                   <small class="text-danger" v-if="validationErrorsEdit.lastName">{{ validationErrorsEdit.lastName }}</small>
@@ -381,6 +383,7 @@ export default {
     editAction(clientId) {
         axios.get('/api/clients/'+clientId)
         .then(response => {
+          console.log(response.data);
           this.firstName = response.data.firstName;
           this.lastName = response.data.lastName;
           this.email = response.data.email;
@@ -437,14 +440,20 @@ export default {
 
         axios.post('/api/clients/add', addClientData)
           .then(response => {
-               this.showSuccessAlert("Uspešno kreirano" ,"Uspešno ste kreirali novog korisnika!");
+              this.showSuccessAlert("Uspešno kreirano" ,"Uspešno ste kreirali novog klijenta!");
+              this.fetchClients();
+              $('#createClientModal').modal('hide');
+              this.clearModal();
           })
           .catch(error => {
-            this.showErrorAlert();
+            if (error.response && error.response.status === 422) {
+                this.showErrorAlert("E-mail već postoji.");
+            }else{
+              this.showErrorAlert("Došlo je do greške. Molimo Vas, pokušajte kasnije.");
+                $('#createClientModal').modal('hide');
+                this.clearModal();
+            }
           });
-          this.fetchClients();
-          $('#createClientModal').modal('hide');
-          this.clearModal();
       }
     },
 
@@ -463,14 +472,20 @@ export default {
 
         axios.put('/api/clients/'+clientId, updatedClientData)
           .then(response => {
-            this.showSuccessAlert("Uspešno ažurirano" ,"Uspešno ste izmenili korisnika!");
+            this.showSuccessAlert("Uspešno ažurirano" ,"Uspešno ste izmenili klijenta!");
+            this.fetchClients();
+            $('#editClientModal').modal('hide');
+            this.clearModal();
           })
           .catch(error => {
-            this.showErrorAlert();
+            if (error.response && error.response.status === 422) {
+                this.showErrorAlert("E-mail već postoji.");
+            }else{
+              this.showErrorAlert("Došlo je do greške. Molimo Vas, pokušajte kasnije.");
+              $('#editClientModal').modal('hide');
+              this.clearModal();
+            }
           });
-          this.fetchClients();
-          $('#editClientModal').modal('hide');
-          this.clearModal();
       }  
     },
 
@@ -492,7 +507,7 @@ export default {
       const clientId = this.clientIdToDelete;
       axios.delete('/api/clients/'+clientId)
         .then(response => {
-          this.showSuccessAlert("Uspešno obrisano" ,"Uspešno ste obrisali korisnika!");
+          this.showSuccessAlert("Uspešno obrisano" ,"Uspešno ste obrisali klijenta!");
         })
         .catch(error => {
           this.showErrorAlert();
@@ -623,10 +638,10 @@ export default {
       })
     },
 
-    showErrorAlert() {
+    showErrorAlert(text) {
       Swal.fire({
         title: 'Greška!',
-        text: "Došlo je do greške. Molimo Vas, pokušajte kasnije!",
+        text: text,
         icon: 'error',
         confirmButtonText: 'OK'
       })
@@ -683,5 +698,18 @@ export default {
 </script>
 
 <style scoped>
-  
+    .rlFullName:hover{
+      color: #ffed00 !important;
+    }
+
+    .actionH:hover {
+      background-color: #ffed00 !important;
+    }
+    .colorBackground {
+      background-color: #ffed00 !important;
+    }
+
+    .colorText {
+      color: #ffed00 !important;
+    }
 </style>

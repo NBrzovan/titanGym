@@ -43,6 +43,7 @@ class Client extends Model
     public static function getClient($id){        
         $clientData = self::leftJoin('feerecords', 'client.id', '=', 'feerecords.clientID')
         ->where('client.id', $id)
+        ->latest('feerecords.created_at')  
         ->select('client.*', 'feerecords.membershipFee as membershipFee', 'feerecords.dateOfPayment', 'feerecords.dateExpiry')
         ->first();
 
@@ -51,21 +52,36 @@ class Client extends Model
 
     public function updateClient($id, $data){
         $client = self::find($id);
+
+        $existingClientEmail = Client::where('email', $data['email'])
+                                    ->where('id', '!=', $id)
+                                    ->first();
         
+        if ($existingClientEmail) {
+            return response()->json(['message' => 'E-mail već postoji'], 422);
+        }
+    
         $convertedDateOfBirth = Carbon::createFromFormat('d.m.Y.', $data['dateOfBirth'])->format('Y-m-d');
         $data['dateOfBirth'] = $convertedDateOfBirth;
-
+    
         if (!$client) {
-            return null; // Klijent nije pronađen
+            return null; 
         }
         
         $client->update($data);
-
+    
         if (isset($data['membershipFee'])) {
-            
-            FeeRecords::where('clientID', $id)->update(['membershipFee' => $data['membershipFee']]);
+            // Dobijanje poslednjeg zapisa za određenog klijenta
+            $latestFeeRecord = FeeRecords::where('clientID', $id)
+                ->latest('created_at')
+                ->first();
+    
+            if ($latestFeeRecord) {
+                // Ažuriranje poslednjeg zapisa u FeeRecords tabeli
+                $latestFeeRecord->update(['membershipFee' => $data['membershipFee']]);
+            }
         }
-
+    
         return $client;
     }
 
@@ -76,12 +92,12 @@ class Client extends Model
             return false; 
         }
 
-        $feeRecord = FeeRecords::where('clientID', $client->id)->first();
+        $feeRecords = FeeRecords::where('clientID', $client->id)->get();
 
-        if ($feeRecord) {
+        foreach ($feeRecords as $feeRecord) {
             $feeRecord->delete();
         }
-      
+
         return $client->delete();
     }
 
@@ -95,7 +111,13 @@ class Client extends Model
             'phone' => 'required|string|max:20',
             'dateOfBirth' => 'required|date',
         ]);
-
+    
+        $existingClientEmail = Client::where('email', $request->input('email'))->first();
+        
+        if ($existingClientEmail) {
+            return response()->json(['message' => 'E-mail već postoji'], 422);
+        }
+    
         $dateOfBirth = $request->input('dateOfBirth');
         $convertedDateOfBirth = Carbon::createFromFormat('d.m.Y.', $dateOfBirth)->format('Y-m-d');
         
@@ -108,18 +130,17 @@ class Client extends Model
             'dateOfBirth' => $convertedDateOfBirth,
             'status' => 'Aktivan'
         ]);
-
-        
+    
         if ($client) {
             $clientId = $client->id;
-
+    
             $feeRecord = FeeRecords::create([
                 'clientID' => $clientId,
                 'dateOfPayment' => now(),
                 'dateExpiry' => now()->addMonth(),
                 'membershipFee' => $request->input('membershipFee')
             ]);
-
+    
             return response()->json(['message' => 'Klijent uspešno dodat'], 201);
         } else {
             return response()->json(['message' => 'Greška prilikom kreiranja klijenta'], 500);

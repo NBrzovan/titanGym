@@ -6,7 +6,7 @@
     <body class="container-scroller">
         <div id="app">
             <navbar-component></navbar-component>
-            <div class="container-fluid page-body-wrapper">
+            <div class="page-body-wrapper">
                 <sidebar-component></sidebar-component>
                 <div class="main-panel">
                     <router-view></router-view>
@@ -15,14 +15,26 @@
             </div>
         </div>
         <script src="{{ mix('js/app.js') }}"></script>
-        <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
+        {{-- <script src="../../assets/vendors/js/vendor.bundle.base.js"></script> --}}
         <!-- endinject -->
         <!-- Plugin js for this page -->
         <!-- End plugin js for this page -->
         <!-- inject:js -->
-        <script src="../../assets/js/off-canvas.js"></script>
+        {{-- <script src="../../assets/js/off-canvas.js"></script>
         <script src="../../assets/js/hoverable-collapse.js"></script>
-        <script src="../../assets/js/misc.js"></script>
+        <script src="../../assets/js/misc.js"></script> --}}
+        <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+        <!-- Plugin js for this page -->
+        <script src="{{ asset('assets/vendors/chart.js/Chart.min.js') }}"></script>
+        <script src="{{ asset('assets/vendors/jquery-circle-progress/js/circle-progress.min.js') }}"></script>
+        <!-- End plugin js for this page -->
+        <!-- inject:js -->
+        <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+        <script src="{{ asset('assets/js/hoverable-collapse.js') }}"></script>
+        <script src="{{ asset('assets/js/misc.js') }}"></script>
+        <!-- endinject -->
+        <!-- Custom js for this page -->
+        {{-- <script src="{{ asset('assets/js/dashboard.js') }}"></script> --}}
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 // Provera da li postoji token u local storage-u

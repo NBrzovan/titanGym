@@ -13603,17 +13603,17 @@ dl {
           left: 0;
           top: .5rem;
           bottom: 0;
-          background: #44ce42;
+          background: #ffed00;
           height: 24px;
           width: 4px; }
           .rtl .sidebar .nav .nav-item.active > .nav-link:before {
             left: auto;
             right: 0; }
         .sidebar .nav .nav-item.active > .nav-link .menu-title {
-          color: #44ce42;
+          color: #ffed00;
           font-family: "nunito-medium", sans-serif; }
         .sidebar .nav .nav-item.active > .nav-link i {
-          color: #44ce42; }
+          color: #ffed00; }
       .sidebar .nav .nav-item:hover {
         background: #161621; }
       .sidebar .nav .nav-item.nav-profile .nav-link {

@@ -34,7 +34,7 @@ class ClientController extends Controller
             return response()->json(['message' => 'Client not found'], 404);
         }
 
-        return response()->json($client);
+        return $client;
     }
 
     public function destroy($id)
@@ -51,6 +51,8 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         $client = Client::addClient($request);
+
+        return $client;
     }
 
     public function clientReview($id){

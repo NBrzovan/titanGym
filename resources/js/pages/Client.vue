@@ -1,25 +1,48 @@
 <template>
     <div class="content-wrapper">
+        <div class="page-header">
+          <h3 class="page-title"> Pregled klijenta i evidencije </h3>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="#">Tabela</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Tabela evidencije</li>
+            </ol>
+          </nav>
+        </div>
         <div class="row">
             <div class="col-md-6 grid-margin stretch-card">
-                <div class="card">
-                    <div class="card-body">
-                        <h3>Podaci o korisniku</h3>
-                        <p class=""> Wrap content inside<code>&lt;blockquote class="blockquote"&gt;</code></p>
-                        <div v-if="client.length>0">
-                          <h3>Ime i prezime: {{ client[0].firstName }} {{ client[0].lastName }}</h3>
-                          <h3>Email: {{ client[0].email }}</h3>
-                          <h3>Datum rođenja: {{ client[0].dateOfBirth }}</h3>
-                          <h3>Pol: {{ client[0].gender }}</h3>
-                        </div>
-                    </div>
-                </div>
+                <div class="card bg-light">
+                  <div class="card-body">
+                      <h1 class="card-title">Podaci o klijentu</h1>
+                      <div v-if="client.length > 0">
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <h3><i class="fa fa-user icon-md colorText"></i> Ime i prezime</h3>
+                                  <p class="font-weight-bold">{{ client[0].firstName }} {{ client[0].lastName }}</p>
+                              </div>
+                              <div class="col-md-6">
+                                  <h3><i class="fa fa-envelope icon-md colorText"></i> Email</h3>
+                                  <p class="font-weight-bold">{{ client[0].email }}</p>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <h3><i class="fa fa-birthday-cake icon-md colorText"></i> Datum rođenja</h3>
+                                  <p class="font-weight-bold">{{ paidPeriod(client[0].dateOfBirth) }}</p>
+                              </div>
+                              <div class="col-md-6">
+                                  <h3><i class="fa fa-venus-mars icon-md colorText"></i> Pol</h3>
+                                  <p class="font-weight-bold">{{ client[0].gender }}</p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
             </div>
             <div class="col-md-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title">Evidencija plaćanja članarine</h4>
-                    <p class="card-description"> Use <code>&lt;address&gt;</code> tag </p>
                     <div class="row">
                        <table class="table table-striped">
                         <thead>
@@ -38,12 +61,6 @@
                         </tbody>
                       </table>
                     </div>
-                  </div>
-                  <div class="card-body">
-                    <h4 class="card-title">Lead</h4>
-                    <p class="card-description"> Use class <code>.lead</code>
-                    </p>
-                    <p class="lead"> Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. </p>
                   </div>
                 </div>
             </div>
@@ -96,5 +113,11 @@ export default {
 </script>
 
 <style scoped>
-/* Ovde možete dodati stilove */
+  .colorBackground {
+    background-color: #ffed00;
+  }
+
+  .colorText {
+    color: #ffed00;
+  }
 </style>
