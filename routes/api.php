@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FeeRecordsController;
+use App\Http\Controllers\UserController;
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -20,7 +21,8 @@ Route::get('/getClientReview/{id}', [ClientController::class, 'clientReview']);
 
 Route::post('/membershipFee/clients/{id}', [FeeRecordsController::class, 'recordClientMembershipFee']);
 
-Route::get('/currentUser', [AuthController::class, 'currentUser']);
+Route::get('/admin/{id}', [UserController::class, 'show']);
+Route::put('/admin/{id}', [UserController::class, 'update']);
 
 Route::post('login', [AuthController::class, 'login']);
 Route::get('logout', [AuthController::class, 'logout']);

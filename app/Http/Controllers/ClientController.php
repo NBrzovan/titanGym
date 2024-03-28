@@ -55,7 +55,8 @@ class ClientController extends Controller
         return $client;
     }
 
-    public function clientReview($id){
+    public function clientReview($id)
+    {
         $client = Client::getClientReview($id);
         
         return $client;

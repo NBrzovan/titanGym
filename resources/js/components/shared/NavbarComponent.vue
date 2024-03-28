@@ -19,16 +19,6 @@
                   <i class="mdi mdi-file-word mr-2"></i>doc </a>
               </div>
             </li>
-            <li class="nav-item  dropdown d-none d-md-block">
-              <a class="nav-link dropdown-toggle" id="projectDropdown" href="#" data-toggle="dropdown" aria-expanded="false"> Projects </a>
-              <div class="dropdown-menu navbar-dropdown" aria-labelledby="projectDropdown">
-                <a class="dropdown-item" href="#">
-                  <i class="mdi mdi-eye-outline mr-2"></i>View Project </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">
-                  <i class="mdi mdi-pencil-outline mr-2"></i>Edit Project </a>
-              </div>
-            </li>
             <li class="nav-item nav-language dropdown d-none d-md-block">
               <a class="nav-link dropdown-toggle" id="languageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
                 <div class="nav-language-icon">
@@ -48,6 +38,37 @@
                     <p class="mb-1 text-black">Serbian</p>
                   </div>
                 </a>
+              </div>
+            </li>
+            <li class="nav-item nav-profile dropdown">
+              <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
+                <div class="nav-profile-img">
+                   <img class="rounded-circle" :src="userImage" alt="adminImage">
+                </div>
+                <div class="nav-profile-text">
+                  <p class="pt-3">{{adminFirstName ? adminFirstName : null}}</p>
+                </div>
+              </a>
+              <div class="dropdown-menu navbar-dropdown dropdown-menu-right p-0 border-0 font-size-sm" aria-labelledby="profileDropdown" data-x-placement="bottom-end">
+                <div class="p-3 text-center bg-primary">
+                   <img class="rounded-circle" :src="userImage" alt="adminImage">
+                </div>
+                <div class="p-2">
+                  <h5 class="dropdown-header text-uppercase pl-2 text-dark">User Options</h5>
+                  <router-link to="/admin" class="dropdown-item py-1 d-flex align-items-center justify-content-between">
+                    <span>Profile</span>
+                    <span class="p-0">
+                      <!-- <span class="badge badge-success">1</span> -->
+                      <i class="mdi mdi-account-outline ml-1"></i>
+                    </span>
+                  </router-link>
+                  <div role="separator" class="dropdown-divider"></div>
+                  <h5 class="dropdown-header text-uppercase  pl-2 text-dark mt-2">Actions</h5>
+                  <a @click="logout"  style="cursor: pointer" class="dropdown-item py-1 d-flex align-items-center justify-content-between" href="#">
+                      <span class="menu-title">Log Out</span>
+                    <i class="mdi mdi-logout ml-1"></i>
+                  </a>
+                </div>
               </div>
             </li>
             <li class="nav-item dropdown">
@@ -79,17 +100,53 @@
 </template>
 
 <script>
+
+import axios from 'axios';
+
 export default {
   data() {
     return {
-      auth: localStorage.getItem('token') ? localStorage.getItem('token') : null
+      auth: localStorage.getItem('token') ? localStorage.getItem('token') : null,
+      adminFirstName: "",
+      id : localStorage.getItem('id') ? localStorage.getItem('id') : null,
     };
   },
+  mounted() {
+    this.getCurentAdmin();
+  },
   methods: {
-    // Vaše metode idu ovde
+    async logout() {
+      await axios.get('api/logout')
+        .then(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('userName');
+          localStorage.removeItem('firstName');
+          localStorage.removeItem('id');
+          window.location.href = '/';    
+        }).catch((error) => {
+            
+        });
+    },
+
+    getCurentAdmin(){
+      var id = localStorage.getItem('id');
+      axios.get('/api/admin/'+id)
+        .then(response => {
+          this.adminFirstName = response.data.firstName
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
   },
   computed: {
-    // Vaše computed svojstva idu ovde
+    userImage() {
+        if (this.id == 1) {
+            return '/assets/images/faces/adminVlada.png';
+        } else if(this.id == 2) {
+            return '/assets/images/faces/adminAna.jpg'; 
+        }
+    }
   },
   created() {
     // Ovde možete postaviti logiku koja se izvršava pri kreiranju komponente

@@ -37,14 +37,14 @@ class AuthService {
         }
         
         $user = User::where('email', $request->email)->first();
-
-        if ($user) $userName = $user->name;
+        $userId = $user->id;
 
         Session::put('token', $token);
     
         return response()->json([
             'success' => 'Uspešno ste se ulogovali!',
-            'userName' => $userName,
+            'email' => $user-> email,
+            'id' =>  $userId,
             'token' => $token
         ]);
     }

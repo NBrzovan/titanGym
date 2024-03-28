@@ -1,6 +1,7 @@
 import Login from './pages/Login.vue';
 import Clients from './pages/Clients.vue';
 import Client from './pages/Client.vue';
+import AdminComponent from './admin/AdminComponent.vue';
 import { checkIsAuth, checkIsGuest } from './protection.js';
 
 
@@ -23,6 +24,12 @@ const routes = [
     name: 'client',
     beforeEnter: checkIsAuth
   },
+  {
+    path: '/admin',
+    component: AdminComponent,
+    name: 'admin',
+    beforeEnter: checkIsAuth
+  }
 ];
 
 export default routes;

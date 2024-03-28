@@ -17,22 +17,22 @@
                       <div v-if="client.length > 0">
                           <div class="row">
                               <div class="col-md-6">
-                                  <h3><i class="fa fa-user icon-md colorText"></i> Ime i prezime</h3>
-                                  <p class="font-weight-bold">{{ client[0].firstName }} {{ client[0].lastName }}</p>
+                                  <h3><i class="fa fa-user icon-sm colorText"></i> Ime i prezime</h3>
+                                  <p class="font-weight-bold ml-4 pFont">{{ client[0].firstName }} {{ client[0].lastName }}</p>
                               </div>
                               <div class="col-md-6">
-                                  <h3><i class="fa fa-envelope icon-md colorText"></i> Email</h3>
-                                  <p class="font-weight-bold">{{ client[0].email }}</p>
+                                  <h3><i class="fa fa-envelope icon-sm colorText"></i> Email</h3>
+                                  <p class="font-weight-bold ml-4 pFont">{{ client[0].email }}</p>
                               </div>
                           </div>
-                          <div class="row">
+                          <div class="row mt-4">
                               <div class="col-md-6">
-                                  <h3><i class="fa fa-birthday-cake icon-md colorText"></i> Datum rođenja</h3>
-                                  <p class="font-weight-bold">{{ paidPeriod(client[0].dateOfBirth) }}</p>
+                                  <h3><i class="fa fa-birthday-cake icon-sm colorText"></i> Datum rođenja</h3>
+                                  <p class="font-weight-bold ml-4 pFont">{{ paidPeriod(client[0].dateOfBirth) }}</p>
                               </div>
                               <div class="col-md-6">
-                                  <h3><i class="fa fa-venus-mars icon-md colorText"></i> Pol</h3>
-                                  <p class="font-weight-bold">{{ client[0].gender }}</p>
+                                  <h3><i class="fa fa-venus-mars icon-sm colorText"></i> Pol</h3>
+                                  <p class="font-weight-bold ml-4 pFont">{{ client[0].gender }}</p>
                               </div>
                           </div>
                       </div>
@@ -104,10 +104,10 @@ export default {
     this.getClientReview();
   },
   computed: {
-    // Vaše computed svojstva idu ovde
+    
   },
   created() {
-    // Ovde možete postaviti logiku koja se izvršava pri kreiranju komponente
+    
   }
 };
 </script>
@@ -119,5 +119,9 @@ export default {
 
   .colorText {
     color: #ffed00;
+  }
+
+  .pFont{
+    font-size: 20px;
   }
 </style>

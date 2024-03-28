@@ -14,10 +14,13 @@ class UserSeeder extends Seeder
      * @return void
      */
     public function run()
-    {
-        $pass = Hash::make('12345678');
+    {   
+        $passVlada = Hash::make('adminVlada1!');
+        $passAna = Hash::make('adminAna1!');
+
         DB::table('user')->insert([
-            ['name' => 'admin', 'email' => 'admin@gmail.com', 'password' => $pass, 'role_id' => 2],   
+            ['firstName' => 'Vlada', 'lastName' => 'Jovčevski', 'email' => 'adminVlada@gmail.com', 'password' => $passVlada, 'role_id' => 2],   
+            ['firstName' => 'Ana', 'lastName' => 'Bena', 'email' => 'adminAna@gmail.com', 'password' => $passAna, 'role_id' => 2]
         ]);
     }
 }

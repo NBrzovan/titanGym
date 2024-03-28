@@ -41,7 +41,7 @@
                   <th> Klijent </th>
                   <th> Ime i prezime </th>
                   <th> Plaćeni period </th>
-                  <th> Iznos članarina (RSD) </th>
+                  <th> Iznos članarine (RSD) </th>
                   <th> Status </th>
                   <th> Akcije </th>
                 </tr>

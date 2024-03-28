@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -59,7 +60,38 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    protected $table = 'user';
+    public function getAdmin($id){
+        $user = User::select('firstName', 'lastName', 'email')->where('id', $id)->first();
 
+        return $user;
+    }
     
+    public function updateAdmin($data, $id){
+        $validator = Validator::make($data, [
+            'adminName' => 'required|string|max:255',
+            'adminLastName' => 'required|string|max:255',
+            'adminEmail' => 'required|email|max:255'
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+    
+        $user = self::find($id);
+        
+        if ($user) {
+            $user->firstName = $data['adminName'];
+            $user->lastName = $data['adminLastName'];
+            $user->email = $data['adminEmail'];
+            
+            $user->save();
+            
+            return $user;
+        } else {
+            return "Korisnik nije pronađen.";
+        }
+    }
+
+
+    protected $table = 'user';
 }
