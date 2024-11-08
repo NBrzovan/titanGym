@@ -35,7 +35,7 @@ class Client extends Model
             ->leftJoin('feerecords', function ($join) {
                 $join->on('client.id', '=', 'feerecords.clientID')
                     ->whereRaw('feerecords.id = (SELECT MAX(id) FROM feerecords WHERE clientID = client.id)');
-            });
+            })->orderBy('firstName', 'asc');
 
         return $query->get();
     }
@@ -50,20 +50,26 @@ class Client extends Model
         return $clientData;
     }
 
-    public function updateClient($id, $data){
+    public static function updateClient($id, $data){
         $client = self::find($id);
 
-        $existingClientEmail = Client::where('email', $data['email'])
+        if($data['email'] != ""){
+            $existingClientEmail = Client::where('email', $data['email'])
                                     ->where('id', '!=', $id)
                                     ->first();
         
-        if ($existingClientEmail) {
-            return response()->json(['message' => 'E-mail već postoji'], 422);
+            if ($existingClientEmail) {
+                return response()->json(['message' => 'E-mail već postoji'], 422);
+            }
         }
-    
-        $convertedDateOfBirth = Carbon::createFromFormat('d.m.Y.', $data['dateOfBirth'])->format('Y-m-d');
-        $data['dateOfBirth'] = $convertedDateOfBirth;
-    
+        
+        if($data['dateOfBirth'] != ""){
+            $convertedDateOfBirth = Carbon::createFromFormat('d.m.Y.', $data['dateOfBirth'])->format('Y-m-d');
+            $data['dateOfBirth'] = $convertedDateOfBirth;
+        }else{
+            $convertedDateOfBirth = null;
+        }
+  
         if (!$client) {
             return null; 
         }
@@ -85,7 +91,7 @@ class Client extends Model
         return $client;
     }
 
-    public function deleteClient($id){
+    public static function deleteClient($id){
         $client = self::find($id);
 
         if (!$client) {
@@ -101,32 +107,38 @@ class Client extends Model
         return $client->delete();
     }
 
-    public function addClient($request){
-      
+    public static function addClient($request){
+       
         $request->validate([
             'firstName' => 'required|string|max:255',
             'lastName' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            //'email' => 'required|email|max:255',
             'gender' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'dateOfBirth' => 'required|date',
+            //'phone' => 'required|string|max:20',
+            //'dateOfBirth' => 'required|date',
         ]);
-    
-        $existingClientEmail = Client::where('email', $request->input('email'))->first();
         
-        if ($existingClientEmail) {
-            return response()->json(['message' => 'E-mail već postoji'], 422);
+        if($request->input('email') != ""){
+            $existingClientEmail = Client::where('email', $request->input('email'))->first();
+        
+            if ($existingClientEmail) {
+                return response()->json(['message' => 'E-mail već postoji'], 422);
+            }
         }
-    
-        $dateOfBirth = $request->input('dateOfBirth');
-        $convertedDateOfBirth = Carbon::createFromFormat('d.m.Y.', $dateOfBirth)->format('Y-m-d');
+        
+        if($request->input('dateOfBirth') != ""){
+            $dateOfBirth = $request->input('dateOfBirth');
+            $convertedDateOfBirth = Carbon::createFromFormat('d.m.Y.', $dateOfBirth)->format('Y-m-d');
+        }else{
+            $convertedDateOfBirth = null;
+        }
         
         $client = Client::create([
             'firstName' => $request->input('firstName'),
             'lastName' => $request->input('lastName'),
-            'email' => $request->input('email'),
+            'email' => $request->input('email') ?? "",
             'gender' => $request->input('gender'),
-            'phone' => $request->input('phone'),
+            'phone' => $request->input('phone') ?? "",
             'dateOfBirth' => $convertedDateOfBirth,
             'status' => 'Aktivan'
         ]);
@@ -163,7 +175,7 @@ class Client extends Model
         }
     }
 
-    public function getClientReview($id){
+    public static function getClientReview($id){
         $clientData = self::leftJoin('feerecords', 'client.id', '=', 'feerecords.clientID')
         ->where('client.id', $id)
         ->select('client.*', 'feerecords.membershipFee as membershipFee', 'feerecords.dateOfPayment as dateOfPayment', 'feerecords.dateExpiry as dateExpiry')

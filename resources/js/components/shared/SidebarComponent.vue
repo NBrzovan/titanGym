@@ -4,7 +4,7 @@
             <li class="nav-item nav-category">MENU</li>
             <li class="nav-item">
               <router-link to="/admin" class="nav-link" exact-active-class="active">
-                  <span class="icon-bg"><i class="mdi mdi-account-multiple"></i></span>
+                  <span class="icon-bg"><i class="mdi mdi-account-card-details"></i></span>
                   <span class="menu-title">Admin panel</span>
               </router-link>
             </li>

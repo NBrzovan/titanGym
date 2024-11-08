@@ -60,13 +60,13 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    public function getAdmin($id){
+    public static function getAdmin($id){
         $user = User::select('firstName', 'lastName', 'email')->where('id', $id)->first();
 
         return $user;
     }
     
-    public function updateAdmin($data, $id){
+    public static function updateAdmin($data, $id){
         $validator = Validator::make($data, [
             'adminName' => 'required|string|max:255',
             'adminLastName' => 'required|string|max:255',

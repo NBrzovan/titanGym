@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @extends('fixed.head')
+        <link rel="shortcut icon" href="{{asset("assets/images/titan.ico")}}">
     </head>
     <body class="container-scroller">
         <div id="app">

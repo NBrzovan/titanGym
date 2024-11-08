@@ -74,7 +74,6 @@ export default {
       var id = localStorage.getItem('id');
       axios.get('/api/admin/'+id)
         .then(response => {
-          console.log(response);
           this.adminName = response.data.firstName
           this.adminEmail = response.data.email
           this.adminLastName = response.data.lastName

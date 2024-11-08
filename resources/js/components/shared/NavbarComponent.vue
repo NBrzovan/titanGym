@@ -4,7 +4,7 @@
           <a class="navbar-brand brand-logo" href="#"><img src="/assets/images/auth/logoV-removebg-preview.png" alt="logo" /></a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-stretch">
-          <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center pt-4 text-secondary"> You don’t have to be extreme. Just consistent.</span>
+          <span class="d-none d-md-block float-sm-right mt-1 mt-sm-0 text-center pt-4 text-secondary">MINDSET IS EVERYTHING</span>
           <ul class="navbar-nav navbar-nav-right">
             <li class="nav-item  dropdown d-none d-md-block">
               <a class="nav-link dropdown-toggle" id="reportDropdown" href="#" data-toggle="dropdown" aria-expanded="false"> Reports </a>
@@ -58,7 +58,6 @@
                   <router-link to="/admin" class="dropdown-item py-1 d-flex align-items-center justify-content-between">
                     <span>Profile</span>
                     <span class="p-0">
-                      <!-- <span class="badge badge-success">1</span> -->
                       <i class="mdi mdi-account-outline ml-1"></i>
                     </span>
                   </router-link>

@@ -27,6 +27,12 @@
                           </div>
                           <div class="row mt-4">
                               <div class="col-md-6">
+                                  <h3><i class="mdi mdi-cellphone-iphone icon-sm colorText"></i> Broj telefona</h3>
+                                  <p class="font-weight-bold ml-4 pFont">{{  client[0].phone }}</p>
+                              </div>
+                          </div>
+                          <div class="row mt-4">
+                              <div class="col-md-6">
                                   <h3><i class="fa fa-birthday-cake icon-sm colorText"></i> Datum rođenja</h3>
                                   <p class="font-weight-bold ml-4 pFont">{{ paidPeriod(client[0].dateOfBirth) }}</p>
                               </div>
@@ -44,7 +50,8 @@
                   <div class="card-body">
                     <h4 class="card-title">Evidencija plaćanja članarine</h4>
                     <div class="row">
-                       <table class="table table-striped">
+                      <div class="table-responsive">
+                        <table class="table table-striped">
                         <thead>
                           <tr>
                             <th>Dan uplate članarine</th>
@@ -59,7 +66,8 @@
                             <td class="text-center">{{ record.membershipFee }}</td>
                           </tr>
                         </tbody>
-                      </table>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 </div>

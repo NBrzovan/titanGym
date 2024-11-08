@@ -20,7 +20,7 @@ class CreateClientTable extends Migration
             $table->string('gender');
             $table->string('email')->unique();
             $table->string('phone');
-            $table->date('dateOfBirth');
+            $table->date('dateOfBirth')->nullable();
             $table->string('status');
             $table->timestamps();
         });

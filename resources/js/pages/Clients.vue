@@ -1,7 +1,7 @@
 <template>
-  <div class="content-wrapper">
+  <div class="container-fluid content-wrapper">
     <div class="page-header">
-      <h3 class="page-title"> Tabela Klijenata </h3>
+      <h3 class="page-title">Tabela Klijenata</h3>
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="#">Tabela</a></li>
@@ -16,64 +16,71 @@
             <h4 class="card-title">Klijenti</h4>
             <div class="d-flex justify-content-between mb-3">
               <div class="search-field d-xl-block">
-                  <form class="d-flex align-items-center">
-                    <div class="input-group">
-                        <div class="input-group bg-transparent">
-                          <i class="input-group-text border-0 mdi mdi-magnify"></i>
-                          <input v-model="searchClientQuery" 
-                                @keyup="onSearchInput"
-                                type="text" 
-                                class="form-control bg-transparent border-0" 
-                                id="searchClient" 
-                                name="searchClient" 
-                                placeholder="Pretraži klijenta">
-                        </div>
+                <form class="d-flex align-items-center">
+                  <div class="input-group">
+                    <div class="input-group bg-transparent">
+                      <i class="input-group-text border-0 mdi mdi-magnify"></i>
+                      <input v-model="searchClientQuery" 
+                             @keyup="onSearchInput"
+                             type="text" 
+                             class="form-control bg-transparent border-0" 
+                             id="searchClient" 
+                             name="searchClient" 
+                             placeholder="Pretraži klijenta">
                     </div>
+                  </div>
                 </form>
               </div>
-              <button @click="openCreateModal()" class="btn colorBackground text-dark btn-sm" href="#">
+              <button @click="openCreateModal()" class="btn colorBackground text-dark btn-sm">
                 <i class="mdi mdi-account-plus mt-2"></i> Dodaj klijenta
               </button>
             </div>
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th> Klijent </th>
-                  <th> Ime i prezime </th>
-                  <th> Plaćeni period </th>
-                  <th> Iznos članarine (RSD) </th>
-                  <th> Status </th>
-                  <th> Akcije </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="client in clients" :key="client.id">
-                  <td>
-                    <img :src="getGenderImage(client.gender, client.id)" alt="Gender Image" />
-                  </td>
-                  <td> 
-                    <router-link class="text-decoration-none rlFullName" :to="'/client/' + client.id">
-                      {{ client.firstName }} {{ client.lastName }}
-                    </router-link>
-                  </td>
-                  <td>{{ paidPeriod(client.dateOfPayment) }} - {{ paidPeriod(client.dateExpiry) }}</td>
-                  <td>{{ client.membershipFee }}</td>
-                  <td :class="{'text-success': new Date() <= new Date(client.dateExpiry), 'text-danger': new Date() > new Date(client.dateExpiry)}">{{ new Date() > new Date(client.dateExpiry) ? 'Neaktivan' : 'Aktivan' }}</td>
-                  <th>
-                    <div class="dropdown">
-                    <button type="button" class="btn btn-dark dropdown-toggle colorText" id="dropdownMenuIconButton7" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="mdi mdi-account"></i>
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton7">
-                      <a @click="openMembershipFeeModal(client.id)" class="dropdown-item actionH" href="#"><i class="mdi mdi-coin"></i> Članarina </a>
-                      <a @click="openEditModal(client.id)" class="dropdown-item actionH" href="#"><i class="mdi mdi-tooltip-edit"></i> Izmeni </a>
-                      <a @click="openDeleteModal(client.id)" class="dropdown-item actionH" href="#"><i class="mdi mdi-delete"></i> Obriši </a>
-                    </div>
-                  </div>
-                  </th>
-                </tr>
-              </tbody>
-            </table>
+            <p>Broj klijenata : {{clientCount}}</p>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th> Klijent </th>
+                    <th> Ime i prezime </th>
+                    <th> Telefon </th>
+                    <th> Plaćeni period </th>
+                    <th> Iznos članarine (RSD) </th>
+                    <th> Status </th>
+                    <th> Akcije </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="client in clients" :key="client.id">
+                    <td>
+                      <img :src="getGenderImage(client.gender, client.id)" alt="Gender Image" class="img-fluid" />
+                    </td>
+                    <td class="pt-4">
+                      <router-link class="text-decoration-none rlFullName" :to="'/client/' + client.id">
+                        {{ client.firstName }} {{ client.lastName }}
+                      </router-link>
+                    </td>
+                    <td class="pt-4"> {{ client.phone }}</td>
+                    <td class="pt-4">{{ paidPeriod(client.dateOfPayment) }} - {{ paidPeriod(client.dateExpiry) }}</td>
+                    <td class="pt-4">{{ client.membershipFee }}</td>
+                    <td class="pt-4" :class="{'text-success': new Date() <= new Date(client.dateExpiry), 'text-danger': new Date() > new Date(client.dateExpiry)}">
+                      {{ new Date() > new Date(client.dateExpiry) ? 'Neaktivan' : 'Aktivan' }}
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-dark dropdown-toggle colorText" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="mdi mdi-account"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                          <a @click="openMembershipFeeModal(client.id)" class="dropdown-item actionH" href="#"><i class="mdi mdi-coin"></i> Članarina</a>
+                          <a @click="openEditModal(client.id)" class="dropdown-item actionH" href="#"><i class="mdi mdi-tooltip-edit"></i> Izmeni</a>
+                          <a @click="openDeleteModal(client.id)" class="dropdown-item actionH" href="#"><i class="mdi mdi-delete"></i> Obriši</a>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -112,16 +119,18 @@
                 </div>
               </div>
               <div class="form-group row">
-              <label for="gender" class="col-sm-3 col-form-label">Izaberite pol</label>
-              <div class="col-sm-9 form-inline">
-                  <label class="form-check-label" for="createGenderM">
-                      <input v-model="createGender" class="form-check-input ml-1" type="radio" id="createGenderM" name="createGender" value="Muški">Muški
-                  </label>
-                  <label class="form-check-label ml-4" for="createGenderZ">
-                      <input v-model="createGender" class="form-check-input ml-1" type="radio" id="createGenderZ" name="createGender" value="Ženski">Ženski
-                  </label>
+                  <label for="gender" class="col-12 col-sm-3 col-form-label pt-4">Izaberite pol</label>
+                  <div class="col-12 col-sm-9">
+                      <div class="form-check form-check-inline">
+                          <input v-model="createGender" class="form-check-input" type="radio" id="createGenderM" name="createGender" value="Muški">
+                          <label class="pt-2" for="createGenderM"> Muški</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input v-model="createGender" class="form-check-input" type="radio" id="createGenderZ" name="createGender" value="Ženski">
+                          <label class="pt-2" for="createGenderZ"> Ženski</label>
+                      </div>
+                  </div>
               </div>
-            </div>
               <div class="form-group row">
                 <label for="phone" class="col-sm-3 col-form-label">Broj telefona</label>
                 <div class="col-sm-9">
@@ -185,13 +194,15 @@
                 </div>
               </div>
               <div class="form-group row">
-              <label for="gender" class="col-sm-3 col-form-label">Izaberi pol</label>
+              <label for="gender" class="col-sm-3 col-form-label pt-3">Izaberite pol</label>
               <div class="col-sm-9 form-inline">
                   <label class="form-check-label" for="genderM">
-                      <input v-model="gender" class="form-check-input ml-1" type="radio" id="genderM" name="genderM" value="Muški"> Muški
+                      <input v-model="gender" class="form-check-input ml-1" type="radio" id="genderM" name="genderM" value="Muški">
+                      <label for="createGenderM"> Muški</label>
                   </label>
                   <label class="form-check-label ml-4" for="genderZ">
-                      <input v-model="gender" class="form-check-input ml-1" type="radio" id="genderZ" name="genderZ" value="Ženski"> Ženski
+                      <input v-model="gender" class="form-check-input ml-1" type="radio" id="genderZ" name="genderZ" value="Ženski">
+                      <label for="createGenderZ"> Ženski</label>
                   </label>
               </div>
             </div>
@@ -283,6 +294,7 @@ export default {
   data() {
     return {
       clients: [],
+      clientCount: 0,
       maleImages: ['face1.jpg', 'face4.jpg', 'face4.jpg', 'face7.jpg', 'face8.jpg', 'face9.jpg', 'face12.jpg', 'face13.jpg', 'face15.jpg', 'face16.jpg', 'face19.jpg','face21.jpg'],
       femaleImages: ['face2.jpg', 'face6.jpg', 'face10.jpg', 'face11.jpg', 'face20.jpg', 'face23.jpg', 'face26.jpg'],
       clientIdToEdit: null,
@@ -341,6 +353,7 @@ export default {
       })
       .then(response => {
         this.clients = response.data;
+        this.clientCount = this.clients.length;
       })
       .catch(error => {
         console.error('Error fetching clients:', error);
@@ -383,13 +396,16 @@ export default {
     editAction(clientId) {
         axios.get('/api/clients/'+clientId)
         .then(response => {
-          console.log(response.data);
           this.firstName = response.data.firstName;
           this.lastName = response.data.lastName;
           this.email = response.data.email;
           this.gender = response.data.gender;
           this.phone = response.data.phone;
-          this.dateOfBirth = moment(response.data.dateOfBirth).format('DD.MM.YYYY.');
+          if(response.data.dateOfBirth != null){
+            this.dateOfBirth = moment(response.data.dateOfBirth).format('DD.MM.YYYY.');
+          }else{
+            this.dateOfBirth == "";
+          }
           this.membershipFee = response.data.membershipFee;
         })
         .catch(error => {
@@ -409,7 +425,7 @@ export default {
         return;
       }
 
-      axios.post('/api/membershipFee/clients/' +this.membershipFeeClientId, {
+      axios.post('/api/membershipFee/clients/' + this.membershipFeeClientId, {
           membershipFeeRecord : this.membershipFeeRecord
         })
         .then(response => {
@@ -534,21 +550,21 @@ export default {
           this.validationErrors.createLastName = null;
       }
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!this.createEmail || this.createEmail.trim() === "") {
-        this.validationErrors.createEmail = "Polje Email ne sme biti prazno.";
-      } else if (!emailRegex.test(this.createEmail)) {
-        this.validationErrors.createEmail = "Neispravan format Email adrese.";
-      } else {
-        this.validationErrors.createEmail = null;
-      }
+      // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      // if (!this.createEmail || this.createEmail.trim() === "") {
+      //   this.validationErrors.createEmail = "Polje Email ne sme biti prazno.";
+      // } else if (!emailRegex.test(this.createEmail)) {
+      //   this.validationErrors.createEmail = "Neispravan format Email adrese.";
+      // } else {
+      //   this.validationErrors.createEmail = null;
+      // }
 
-      if (!this.createPhone || this.createPhone.trim() === "") {
-        this.validationErrors.createPhone = "Polje Broj Telefona ne sme biti prazno.";
-        isValid = false;
-      } else {
-          this.validationErrors.createPhone = null;
-      }
+      // if (!this.createPhone || this.createPhone.trim() === "") {
+      //   this.validationErrors.createPhone = "Polje Broj Telefona ne sme biti prazno.";
+      //   isValid = false;
+      // } else {
+      //     this.validationErrors.createPhone = null;
+      // }
 
       if (!this.createmembershipFee || this.createmembershipFee.trim() === "") {
           this.validationErrors.createmembershipFee = "Polje Članarina (RSD) ne sme biti prazno.";
@@ -560,14 +576,14 @@ export default {
           this.validationErrors.createmembershipFee = null;
       }
       
-      const regex = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}\.$/;
+      // const regex = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}\.$/;
 
-      if(!regex.test(this.createDateOfBirth)){
-          this.validationErrors.createDateOfBirth = "Polje Datum rođenja mora biti u formatu dd.mm.yyyy.";
-          isValid = false;
-        } else {
-            this.validationErrors.createDateOfBirth = null;
-        }
+      // if(!regex.test(this.createDateOfBirth)){
+      //   this.validationErrors.createDateOfBirth = "Polje Datum rođenja mora biti u formatu dd.mm.yyyy.";
+      //   isValid = false;
+      // } else {
+      //     this.validationErrors.createDateOfBirth = null;
+      // }
       
 
       return isValid;
@@ -590,21 +606,21 @@ export default {
           this.validationErrorsEdit.lastName = null;
       }
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!this.email || this.email.trim() === "") {
-        this.validationErrorsEdit.email = "Polje Email ne sme biti prazno.";
-      } else if (!emailRegex.test(this.email)) {
-        this.validationErrorsEdit.email = "Neispravan format Email adrese.";
-      } else {
-        this.validationErrorsEdit.email = null;
-      }
+      // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      // if (!this.email || this.email.trim() === "") {
+      //   this.validationErrorsEdit.email = "Polje Email ne sme biti prazno.";
+      // } else if (!emailRegex.test(this.email)) {
+      //   this.validationErrorsEdit.email = "Neispravan format Email adrese.";
+      // } else {
+      //   this.validationErrorsEdit.email = null;
+      // }
 
-      if (!this.phone || this.phone.trim() === "") {
-        this.validationErrorsEdit.phone = "Polje Broj Telefona ne sme biti prazno.";
-        isValid = false;
-      } else {
-          this.validationErrorsEdit.phone = null;
-      }
+      // if (!this.phone || this.phone.trim() === "") {
+      //   this.validationErrorsEdit.phone = "Polje Broj Telefona ne sme biti prazno.";
+      //   isValid = false;
+      // } else {
+      //     this.validationErrorsEdit.phone = null;
+      // }
 
       if (!this.membershipFee || this.membershipFee.trim() === "") {
         this.validationErrorsEdit.membershipFee = "Polje Članarina (RSD) ne sme biti prazno.";
@@ -618,14 +634,13 @@ export default {
       
       const regex = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}\.$/;
 
-      if(!regex.test(this.dateOfBirth)){
-          this.validationErrorsEdit.dateOfBirth = "Polje Datum rođenja mora biti u formatu dd.mm.yyyy.";
-          isValid = false;
-        } else {
-            this.validationErrorsEdit.dateOfBirth = null;
-        }
+      // if(!regex.test(this.dateOfBirth)){
+      //   this.validationErrorsEdit.dateOfBirth = "Polje Datum rođenja mora biti u formatu dd.mm.yyyy.";
+      //   isValid = false;
+      // } else {
+      //     this.validationErrorsEdit.dateOfBirth = null;
+      // }
       
-
       return isValid;
     },
 
