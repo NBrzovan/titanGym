@@ -21020,6 +21020,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       createPhone: '',
       createDateOfBirth: '',
       createmembershipFee: '',
+      createDateOfPayment: '',
+      createDateExpiry: '',
+      membershipFeeDateOfPayment: '',
+      membershipFeeDateExpiry: '',
       firstName: '',
       lastName: '',
       email: '',
@@ -21027,12 +21031,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       phone: '',
       dateOfBirth: '',
       membershipFee: '',
+      editDateOfPayment: '',
+      editDateExpiry: '',
       firstNameDelete: '',
       lastNameDelete: '',
       searchClientQuery: '',
       membershipFeeClientId: '',
       membershipFeeRecord: '',
       membershipFeeRecordErr: '',
+      membershipFeeDateOfPaymentErr: '',
+      membershipFeeDateExpiryErr: '',
       validationErrors: {
         createFirstName: null,
         createLastName: null,
@@ -21040,7 +21048,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         createGender: null,
         createPhone: null,
         createmembershipFee: null,
-        createDateOfBirth: null
+        createDateOfBirth: null,
+        createDateOfPayment: null,
+        createDateExpiry: null
       },
       validationErrorsEdit: {
         firstName: null,
@@ -21049,7 +21059,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         gender: null,
         phone: null,
         membershipFee: null,
-        dateOfBirth: null
+        dateOfBirth: null,
+        editDateOfPayment: null,
+        editDateExpiry: null
       }
     };
   },
@@ -21120,6 +21132,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         } else {
           _this2.dateOfBirth == "";
         }
+        if (response.data.dateOfPayment != null || response.data.dateOfPayment != '') {
+          _this2.editDateOfPayment = moment__WEBPACK_IMPORTED_MODULE_2___default()(response.data.dateOfPayment).format('DD.MM.YYYY.');
+        } else {
+          _this2.editDateOfPayment == "";
+        }
+        if (response.data.dateExpiry != null || response.data.dateExpiry != '') {
+          _this2.editDateExpiry = moment__WEBPACK_IMPORTED_MODULE_2___default()(response.data.dateExpiry).format('DD.MM.YYYY.');
+        } else {
+          _this2.editDateExpiry == "";
+        }
         _this2.membershipFee = response.data.membershipFee;
       })["catch"](function (error) {
         console.error('Error fetching clients:', error);
@@ -21131,13 +21153,26 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     addMembershipFeeRecord: function addMembershipFeeRecord() {
       var _this3 = this;
       var membershipFeeRecord = parseFloat(this.membershipFeeRecord);
+      var datePattern = /^\d{2}\.\d{2}\.\d{4}\.$/;
       this.membershipFeeRecordErr = '';
+      this.membershipFeeDateOfPaymentErr = '';
+      this.membershipFeeDateExpiryErr = '';
       if (isNaN(membershipFeeRecord) || membershipFeeRecord < 0 || membershipFeeRecord > 100000) {
         this.membershipFeeRecordErr = "Unesite validan iznos od 0 do 100000";
         return;
       }
+      if (!datePattern.test(this.membershipFeeDateOfPayment)) {
+        this.membershipFeeDateOfPaymentErr = "Datum mora biti u formatu DD.MM.YYYY.";
+        return;
+      }
+      if (!datePattern.test(this.membershipFeeDateExpiry)) {
+        this.membershipFeeDateExpiryErr = "Datum mora biti u formatu DD.MM.YYYY.";
+        return;
+      }
       axios__WEBPACK_IMPORTED_MODULE_0___default().post('/api/membershipFee/clients/' + this.membershipFeeClientId, {
-        membershipFeeRecord: this.membershipFeeRecord
+        membershipFeeRecord: this.membershipFeeRecord,
+        dateOfPayment: this.membershipFeeDateOfPayment,
+        dateExpiry: this.membershipFeeDateExpiry
       }).then(function (response) {
         _this3.showSuccessAlert("Uspešno evidentirano", "Uspešno ste evidentirali članarinu!");
       })["catch"](function (error) {
@@ -21160,7 +21195,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           gender: this.createGender,
           phone: this.createPhone,
           dateOfBirth: this.createDateOfBirth,
-          membershipFee: this.createmembershipFee
+          membershipFee: this.createmembershipFee,
+          dateOfPayment: this.createDateOfPayment,
+          dateExpiry: this.createDateExpiry
         };
         axios__WEBPACK_IMPORTED_MODULE_0___default().post('/api/clients/add', addClientData).then(function (response) {
           _this4.showSuccessAlert("Uspešno kreirano", "Uspešno ste kreirali novog klijenta!");
@@ -21189,7 +21226,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           gender: this.gender,
           phone: this.phone,
           dateOfBirth: this.dateOfBirth,
-          membershipFee: this.membershipFee
+          membershipFee: this.membershipFee,
+          dateOfPayment: this.editDateOfPayment,
+          dateExpiry: this.editDateExpiry
         };
         axios__WEBPACK_IMPORTED_MODULE_0___default().put('/api/clients/' + clientId, updatedClientData).then(function (response) {
           _this5.showSuccessAlert("Uspešno ažurirano", "Uspešno ste izmenili klijenta!");
@@ -21233,6 +21272,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     validateForm: function validateForm() {
       var isValid = true;
+      var datePattern = /^\d{2}\.\d{2}\.\d{4}\.$/;
       if (!this.createFirstName || this.createFirstName.trim() === "") {
         this.validationErrors.createFirstName = "Polje Ime ne sme biti prazno.";
         isValid = false;
@@ -21244,6 +21284,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         isValid = false;
       } else {
         this.validationErrors.createLastName = null;
+      }
+      if (!datePattern.test(this.createDateOfPayment)) {
+        this.validationErrors.createDateOfPayment = "Datum mora biti u formatu DD.MM.YYYY.";
+        isValid = false;
+      } else {
+        this.validationErrors.createDateOfPayment = null;
+      }
+      if (!datePattern.test(this.createDateExpiry)) {
+        this.validationErrors.createDateExpiry = "Datum mora biti u formatu DD.MM.YYYY.";
+        isValid = false;
+      } else {
+        this.validationErrors.createDateExpiry = null;
       }
 
       // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21285,6 +21337,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     validateFormEdit: function validateFormEdit() {
       var isValid = true;
+      var datePattern = /^\d{2}\.\d{2}\.\d{4}\.$/;
       if (!this.firstName || this.firstName.trim() === "") {
         this.validationErrorsEdit.firstName = "Polje Ime ne sme biti prazno.";
         isValid = false;
@@ -21323,7 +21376,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       } else {
         this.validationErrorsEdit.membershipFee = null;
       }
-      var regex = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}\.$/;
+      if (!datePattern.test(this.editDateOfPayment)) {
+        this.validationErrorsEdit.editDateOfPayment = "Datum mora biti u formatu DD.MM.YYYY.";
+        isValid = false;
+      } else {
+        this.validationErrorsEdit.editDateOfPayment = null;
+      }
+      if (!datePattern.test(this.editDateExpiry)) {
+        this.validationErrorsEdit.editDateExpiry = "Datum mora biti u formatu DD.MM.YYYY.";
+        isValid = false;
+      } else {
+        this.validationErrorsEdit.editDateExpiry = null;
+      }
+
+      //const regex = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}\.$/;
 
       // if(!regex.test(this.dateOfBirth)){
       //   this.validationErrorsEdit.dateOfBirth = "Polje Datum rođenja mora biti u formatu dd.mm.yyyy.";
@@ -21351,7 +21417,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       });
     },
     clearModal: function clearModal() {
-      this.createFirstName = '', this.createLastName = '', this.createEmail = '', this.createGender = 'Muški', this.createPhone = '', this.createDateOfBirth = '', this.createmembershipFee = '', this.firstName = '', this.lastName = '', this.email = '', this.gender = '', this.phone = '', this.dateOfBirth = '', this.firstNameDelete = '', this.lastNameDelete = '', this.membershipFee = '', this.membershipFeeClientId = '', this.membershipFeeRecord = '';
+      this.createFirstName = '', this.createLastName = '', this.createEmail = '', this.createGender = 'Muški', this.createPhone = '', this.createDateOfBirth = '', this.createmembershipFee = '', this.firstName = '', this.lastName = '', this.email = '', this.gender = '', this.phone = '', this.dateOfBirth = '', this.firstNameDelete = '', this.lastNameDelete = '', this.membershipFee = '', this.membershipFeeClientId = '', this.membershipFeeRecord = '', this.createDateOfPayment = '', this.createDateExpiry = '', this.membershipFeeDateOfPayment = '', this.membershipFeeDateExpiry = '', this.editDateOfPayment = '', this.editDateExpiry = '';
     },
     paidPeriod: function paidPeriod(period) {
       if (!period) return '';
@@ -22141,7 +22207,7 @@ var _hoisted_16 = {
   "class": "table table-striped"
 };
 var _hoisted_17 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Klijent "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Ime i prezime "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Telefon "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Plaćeni period "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Iznos članarine (RSD) "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Status "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Akcije ")])], -1 /* HOISTED */);
+  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Klijent "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Ime i prezime "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Plaćeni period "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Iznos članarine (RSD) "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Status "), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, " Akcije ")])], -1 /* HOISTED */);
 });
 var _hoisted_18 = ["src"];
 var _hoisted_19 = {
@@ -22154,12 +22220,9 @@ var _hoisted_21 = {
   "class": "pt-4"
 };
 var _hoisted_22 = {
-  "class": "pt-4"
-};
-var _hoisted_23 = {
   "class": "btn-group"
 };
-var _hoisted_24 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_23 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-dark dropdown-toggle colorText",
@@ -22170,438 +22233,470 @@ var _hoisted_24 = /*#__PURE__*/_withScopeId(function () {
     "class": "mdi mdi-account"
   })], -1 /* HOISTED */);
 });
-var _hoisted_25 = {
+var _hoisted_24 = {
   "class": "dropdown-menu"
 };
-var _hoisted_26 = ["onClick"];
-var _hoisted_27 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_25 = ["onClick"];
+var _hoisted_26 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "mdi mdi-coin"
   }, null, -1 /* HOISTED */);
 });
-var _hoisted_28 = ["onClick"];
-var _hoisted_29 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_27 = ["onClick"];
+var _hoisted_28 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "mdi mdi-tooltip-edit"
   }, null, -1 /* HOISTED */);
 });
-var _hoisted_30 = ["onClick"];
-var _hoisted_31 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_29 = ["onClick"];
+var _hoisted_30 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "mdi mdi-delete"
   }, null, -1 /* HOISTED */);
 });
-var _hoisted_32 = {
+var _hoisted_31 = {
   "class": "modal fade",
   id: "createClientModal",
   tabindex: "-1",
   "aria-labelledby": "createClientModalLabel",
   "aria-hidden": "true"
 };
-var _hoisted_33 = {
+var _hoisted_32 = {
   "class": "modal-dialog"
 };
-var _hoisted_34 = {
+var _hoisted_33 = {
   "class": "modal-content"
 };
-var _hoisted_35 = {
+var _hoisted_34 = {
   "class": "modal-header"
 };
-var _hoisted_36 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_35 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "modal-title",
     id: "createClientModalLabel"
   }, "Dodavanje klijenta", -1 /* HOISTED */);
 });
-var _hoisted_37 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_36 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "mdi mdi-close"
   }, null, -1 /* HOISTED */);
 });
-var _hoisted_38 = [_hoisted_37];
-var _hoisted_39 = {
+var _hoisted_37 = [_hoisted_36];
+var _hoisted_38 = {
   "class": "modal-body"
 };
-var _hoisted_40 = {
+var _hoisted_39 = {
   "class": "forms-sample"
 };
-var _hoisted_41 = {
+var _hoisted_40 = {
   "class": "form-group row"
 };
-var _hoisted_42 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_41 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "firstName",
     "class": "col-sm-3 col-form-label"
   }, "Ime klijenta", -1 /* HOISTED */);
 });
-var _hoisted_43 = {
+var _hoisted_42 = {
   "class": "col-sm-9"
 };
-var _hoisted_44 = {
+var _hoisted_43 = {
   key: 0,
   "class": "text-danger"
 };
-var _hoisted_45 = {
+var _hoisted_44 = {
   "class": "form-group row"
 };
-var _hoisted_46 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_45 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "lastName",
     "class": "col-sm-3 col-form-label"
   }, "Prezime klijenta", -1 /* HOISTED */);
 });
-var _hoisted_47 = {
+var _hoisted_46 = {
   "class": "col-sm-9"
+};
+var _hoisted_47 = {
+  key: 0,
+  "class": "text-danger"
 };
 var _hoisted_48 = {
-  key: 0,
-  "class": "text-danger"
-};
-var _hoisted_49 = {
   "class": "form-group row"
 };
-var _hoisted_50 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "email",
-    "class": "col-sm-3 col-form-label"
-  }, "Email", -1 /* HOISTED */);
-});
-var _hoisted_51 = {
-  "class": "col-sm-9"
-};
-var _hoisted_52 = {
-  key: 0,
-  "class": "text-danger"
-};
-var _hoisted_53 = {
-  "class": "form-group row"
-};
-var _hoisted_54 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_49 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "gender",
     "class": "col-12 col-sm-3 col-form-label pt-4"
   }, "Izaberite pol", -1 /* HOISTED */);
 });
-var _hoisted_55 = {
+var _hoisted_50 = {
   "class": "col-12 col-sm-9"
 };
-var _hoisted_56 = {
+var _hoisted_51 = {
   "class": "form-check form-check-inline"
 };
-var _hoisted_57 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_52 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "pt-2",
     "for": "createGenderM"
   }, " Muški", -1 /* HOISTED */);
 });
-var _hoisted_58 = {
+var _hoisted_53 = {
   "class": "form-check form-check-inline"
 };
-var _hoisted_59 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_54 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "class": "pt-2",
     "for": "createGenderZ"
   }, " Ženski", -1 /* HOISTED */);
 });
-var _hoisted_60 = {
+var _hoisted_55 = {
   "class": "form-group row"
 };
-var _hoisted_61 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_56 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "phone",
     "class": "col-sm-3 col-form-label"
   }, "Broj telefona", -1 /* HOISTED */);
 });
-var _hoisted_62 = {
+var _hoisted_57 = {
   "class": "col-sm-9"
+};
+var _hoisted_58 = {
+  key: 0,
+  "class": "text-danger"
+};
+var _hoisted_59 = {
+  "class": "form-group row"
+};
+var _hoisted_60 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "createDateOfPayment",
+    "class": "col-sm-3 col-form-label"
+  }, "Datum članarine od :", -1 /* HOISTED */);
+});
+var _hoisted_61 = {
+  "class": "col-sm-9"
+};
+var _hoisted_62 = {
+  key: 0,
+  "class": "text-danger"
 };
 var _hoisted_63 = {
-  key: 0,
-  "class": "text-danger"
-};
-var _hoisted_64 = {
   "class": "form-group row"
 };
-var _hoisted_65 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_64 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "dateOfBirth",
+    "for": "createDateExpiry",
     "class": "col-sm-3 col-form-label"
-  }, "Datum rođenja", -1 /* HOISTED */);
+  }, "Datum članarine do :", -1 /* HOISTED */);
 });
-var _hoisted_66 = {
+var _hoisted_65 = {
   "class": "col-sm-9"
 };
-var _hoisted_67 = {
+var _hoisted_66 = {
   key: 0,
   "class": "text-danger"
 };
-var _hoisted_68 = {
+var _hoisted_67 = {
   "class": "form-group row"
 };
-var _hoisted_69 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_68 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "membershipFee",
     "class": "col-sm-3 col-form-label"
   }, "Članarina (RSD)", -1 /* HOISTED */);
 });
-var _hoisted_70 = {
+var _hoisted_69 = {
   "class": "col-sm-9"
 };
-var _hoisted_71 = {
+var _hoisted_70 = {
   key: 0,
   "class": "text-danger"
 };
-var _hoisted_72 = {
+var _hoisted_71 = {
   "class": "modal-footer"
 };
-var _hoisted_73 = {
+var _hoisted_72 = {
   "class": "modal fade",
   id: "editClientModal",
   tabindex: "-1",
   "aria-labelledby": "editClientModalLabel",
   "aria-hidden": "true"
 };
-var _hoisted_74 = {
+var _hoisted_73 = {
   "class": "modal-dialog"
 };
-var _hoisted_75 = {
+var _hoisted_74 = {
   "class": "modal-content"
 };
-var _hoisted_76 = {
+var _hoisted_75 = {
   "class": "modal-header"
 };
-var _hoisted_77 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_76 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "modal-title",
     id: "editClientModalLabel"
   }, "Izmena klijenta", -1 /* HOISTED */);
 });
-var _hoisted_78 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_77 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "mdi mdi-close"
   }, null, -1 /* HOISTED */);
 });
-var _hoisted_79 = [_hoisted_78];
-var _hoisted_80 = {
+var _hoisted_78 = [_hoisted_77];
+var _hoisted_79 = {
   "class": "modal-body"
 };
-var _hoisted_81 = {
+var _hoisted_80 = {
   "class": "forms-sample"
 };
-var _hoisted_82 = {
+var _hoisted_81 = {
   "class": "form-group row"
 };
-var _hoisted_83 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_82 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "firstName",
     "class": "col-sm-3 col-form-label"
   }, "Ime klijenta", -1 /* HOISTED */);
 });
-var _hoisted_84 = {
+var _hoisted_83 = {
   "class": "col-sm-9"
 };
-var _hoisted_85 = {
+var _hoisted_84 = {
   key: 0,
   "class": "text-danger"
 };
-var _hoisted_86 = {
+var _hoisted_85 = {
   "class": "form-group row"
 };
-var _hoisted_87 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_86 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "lastName",
     "class": "col-sm-3 col-form-label"
   }, "Prezime klijenta", -1 /* HOISTED */);
 });
-var _hoisted_88 = {
+var _hoisted_87 = {
   "class": "col-sm-9"
+};
+var _hoisted_88 = {
+  key: 0,
+  "class": "text-danger"
 };
 var _hoisted_89 = {
-  key: 0,
-  "class": "text-danger"
-};
-var _hoisted_90 = {
   "class": "form-group row"
 };
-var _hoisted_91 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_90 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "email",
-    "class": "col-sm-3 col-form-label"
-  }, "Email", -1 /* HOISTED */);
+    "for": "gender",
+    "class": "col-12 col-sm-3 col-form-label pt-4"
+  }, "Izaberite pol", -1 /* HOISTED */);
 });
+var _hoisted_91 = {
+  "class": "col-12 col-sm-9"
+};
 var _hoisted_92 = {
-  "class": "col-sm-9"
+  "class": "form-check form-check-inline"
 };
-var _hoisted_93 = {
-  key: 0,
-  "class": "text-danger"
-};
+var _hoisted_93 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "class": "pt-2",
+    "for": "genderM"
+  }, " Muški", -1 /* HOISTED */);
+});
 var _hoisted_94 = {
-  "class": "form-group row"
+  "class": "form-check form-check-inline"
 };
 var _hoisted_95 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "gender",
-    "class": "col-sm-3 col-form-label pt-3"
-  }, "Izaberite pol", -1 /* HOISTED */);
-});
-var _hoisted_96 = {
-  "class": "col-sm-9 form-inline"
-};
-var _hoisted_97 = {
-  "class": "form-check-label",
-  "for": "genderM"
-};
-var _hoisted_98 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "createGenderM"
-  }, " Muški", -1 /* HOISTED */);
-});
-var _hoisted_99 = {
-  "class": "form-check-label ml-4",
-  "for": "genderZ"
-};
-var _hoisted_100 = /*#__PURE__*/_withScopeId(function () {
-  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "createGenderZ"
+    "class": "pt-2",
+    "for": "genderZ"
   }, " Ženski", -1 /* HOISTED */);
 });
-var _hoisted_101 = {
+var _hoisted_96 = {
   "class": "form-group row"
 };
-var _hoisted_102 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_97 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "phone",
     "class": "col-sm-3 col-form-label"
   }, "Broj telefona", -1 /* HOISTED */);
 });
-var _hoisted_103 = {
+var _hoisted_98 = {
   "class": "col-sm-9"
+};
+var _hoisted_99 = {
+  key: 0,
+  "class": "text-danger"
+};
+var _hoisted_100 = {
+  "class": "form-group row"
+};
+var _hoisted_101 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "editDateOfPayment",
+    "class": "col-sm-3 col-form-label"
+  }, "Datum članarine od :", -1 /* HOISTED */);
+});
+var _hoisted_102 = {
+  "class": "col-sm-9"
+};
+var _hoisted_103 = {
+  key: 0,
+  "class": "text-danger"
 };
 var _hoisted_104 = {
-  key: 0,
-  "class": "text-danger"
-};
-var _hoisted_105 = {
   "class": "form-group row"
 };
-var _hoisted_106 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_105 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-    "for": "dateOfBirth",
+    "for": "editDateExpiry",
     "class": "col-sm-3 col-form-label"
-  }, "Datum rođenja", -1 /* HOISTED */);
+  }, "Datum članarine do :", -1 /* HOISTED */);
 });
-var _hoisted_107 = {
+var _hoisted_106 = {
   "class": "col-sm-9"
 };
-var _hoisted_108 = {
+var _hoisted_107 = {
   key: 0,
   "class": "text-danger"
 };
-var _hoisted_109 = {
+var _hoisted_108 = {
   "class": "form-group row"
 };
-var _hoisted_110 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_109 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "membershipFee",
     "class": "col-sm-3 col-form-label"
   }, "Članarina (RSD)", -1 /* HOISTED */);
 });
-var _hoisted_111 = {
+var _hoisted_110 = {
   "class": "col-sm-9"
 };
-var _hoisted_112 = {
+var _hoisted_111 = {
   key: 0,
   "class": "text-danger"
 };
-var _hoisted_113 = {
+var _hoisted_112 = {
   "class": "modal-footer"
 };
-var _hoisted_114 = {
+var _hoisted_113 = {
   "class": "modal fade",
   id: "deleteClientModal",
   tabindex: "-1",
   "aria-labelledby": "deleteClientModalLabel",
   "aria-hidden": "true"
 };
-var _hoisted_115 = {
+var _hoisted_114 = {
   "class": "modal-dialog"
 };
-var _hoisted_116 = {
+var _hoisted_115 = {
   "class": "modal-content"
 };
-var _hoisted_117 = {
+var _hoisted_116 = {
   "class": "modal-header"
 };
-var _hoisted_118 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_117 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "modal-title",
     id: "deleteClientModalLabel"
   }, "Potvrda brisanja", -1 /* HOISTED */);
 });
-var _hoisted_119 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_118 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "mdi mdi-close"
   }, null, -1 /* HOISTED */);
 });
-var _hoisted_120 = [_hoisted_119];
-var _hoisted_121 = {
+var _hoisted_119 = [_hoisted_118];
+var _hoisted_120 = {
   "class": "modal-body"
 };
-var _hoisted_122 = {
+var _hoisted_121 = {
   "class": "modal-footer"
 };
-var _hoisted_123 = {
+var _hoisted_122 = {
   "class": "modal fade",
   id: "membershipFeeModal",
   tabindex: "-1",
   "aria-labelledby": "membershipFeeModal",
   "aria-hidden": "true"
 };
-var _hoisted_124 = {
+var _hoisted_123 = {
   "class": "modal-dialog"
 };
-var _hoisted_125 = {
+var _hoisted_124 = {
   "class": "modal-content"
 };
-var _hoisted_126 = {
+var _hoisted_125 = {
   "class": "modal-header"
 };
-var _hoisted_127 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_126 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", {
     "class": "modal-title",
     id: "membershipFeeModal"
   }, "Evidentiraj članarinu za tekući mesec (RSD)", -1 /* HOISTED */);
 });
-var _hoisted_128 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_127 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
     "class": "mdi mdi-close"
   }, null, -1 /* HOISTED */);
 });
-var _hoisted_129 = [_hoisted_128];
-var _hoisted_130 = {
+var _hoisted_128 = [_hoisted_127];
+var _hoisted_129 = {
   "class": "modal-body"
 };
-var _hoisted_131 = {
+var _hoisted_130 = {
   "class": "forms-sample"
 };
-var _hoisted_132 = {
+var _hoisted_131 = {
   "class": "form-group row"
 };
-var _hoisted_133 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_132 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": "membershipFee",
     "class": "col-sm-3 col-form-label"
   }, "Članarina (RSD)", -1 /* HOISTED */);
 });
-var _hoisted_134 = {
+var _hoisted_133 = {
   "class": "col-sm-9"
 };
-var _hoisted_135 = {
+var _hoisted_134 = {
   key: 0,
   "class": "text-danger"
 };
-var _hoisted_136 = {
+var _hoisted_135 = {
+  "class": "form-group row"
+};
+var _hoisted_136 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "membershipFeeDateOfPayment",
+    "class": "col-sm-3 col-form-label"
+  }, "Datum članarine od :", -1 /* HOISTED */);
+});
+var _hoisted_137 = {
+  "class": "col-sm-9"
+};
+var _hoisted_138 = {
+  key: 0,
+  "class": "text-danger"
+};
+var _hoisted_139 = {
+  "class": "form-group row"
+};
+var _hoisted_140 = /*#__PURE__*/_withScopeId(function () {
+  return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
+    "for": "membershipFeeDateExpiry",
+    "class": "col-sm-3 col-form-label"
+  }, "Datum članarine do :", -1 /* HOISTED */);
+});
+var _hoisted_141 = {
+  "class": "col-sm-9"
+};
+var _hoisted_142 = {
+  key: 0,
+  "class": "text-danger"
+};
+var _hoisted_143 = {
   "class": "modal-footer"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
@@ -22638,31 +22733,31 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(client.firstName) + " " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(client.lastName), 1 /* TEXT */)];
       }),
       _: 2 /* DYNAMIC */
-    }, 1032 /* PROPS, DYNAMIC_SLOTS */, ["to"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_20, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(client.phone), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_21, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.paidPeriod(client.dateOfPayment)) + " - " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.paidPeriod(client.dateExpiry)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(client.membershipFee), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+    }, 1032 /* PROPS, DYNAMIC_SLOTS */, ["to"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_20, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.paidPeriod(client.dateOfPayment)) + " - " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.paidPeriod(client.dateExpiry)), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", _hoisted_21, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(client.membershipFee), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
       "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["pt-4", {
         'text-success': new Date() <= new Date(client.dateExpiry),
         'text-danger': new Date() > new Date(client.dateExpiry)
       }])
-    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(new Date() > new Date(client.dateExpiry) ? 'Neaktivan' : 'Aktivan'), 3 /* TEXT, CLASS */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [_hoisted_24, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(new Date() > new Date(client.dateExpiry) ? 'Neaktivan' : 'Aktivan'), 3 /* TEXT, CLASS */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [_hoisted_23, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
       onClick: function onClick($event) {
         return $options.openMembershipFeeModal(client.id);
       },
       "class": "dropdown-item actionH",
       href: "#"
-    }, [_hoisted_27, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Članarina")], 8 /* PROPS */, _hoisted_26), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    }, [_hoisted_26, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Članarina")], 8 /* PROPS */, _hoisted_25), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
       onClick: function onClick($event) {
         return $options.openEditModal(client.id);
       },
       "class": "dropdown-item actionH",
       href: "#"
-    }, [_hoisted_29, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Izmeni")], 8 /* PROPS */, _hoisted_28), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    }, [_hoisted_28, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Izmeni")], 8 /* PROPS */, _hoisted_27), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
       onClick: function onClick($event) {
         return $options.openDeleteModal(client.id);
       },
       "class": "dropdown-item actionH",
       href: "#"
-    }, [_hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Obriši")], 8 /* PROPS */, _hoisted_30)])])])]);
-  }), 128 /* KEYED_FRAGMENT */))])])])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal ADD Client "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_35, [_hoisted_36, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+    }, [_hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Obriši")], 8 /* PROPS */, _hoisted_29)])])])]);
+  }), 128 /* KEYED_FRAGMENT */))])])])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal ADD Client "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_31, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_33, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [_hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
     href: "#",
     onClick: _cache[3] || (_cache[3] = function ($event) {
       return $options.closeModal('createClientModal');
@@ -22670,7 +22765,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "btn-close",
     "data-bs-dismiss": "modal",
     "aria-label": "Close"
-  }, [].concat(_hoisted_38))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_39, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_41, [_hoisted_42, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_43, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, [].concat(_hoisted_37))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_38, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_39, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_40, [_hoisted_41, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_42, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
       return $data.createFirstName = $event;
@@ -22679,7 +22774,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "createFirstName",
     name: "createFirstName",
     placeholder: "Ime"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createFirstName]]), $data.validationErrors.createFirstName ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_44, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createFirstName), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [_hoisted_46, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_47, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createFirstName]]), $data.validationErrors.createFirstName ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_43, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createFirstName), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, [_hoisted_45, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_46, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
       return $data.createLastName = $event;
@@ -22688,17 +22783,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "createLastName",
     name: "createLastName",
     placeholder: "Prezime"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createLastName]]), $data.validationErrors.createLastName ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_48, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createLastName), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_49, [_hoisted_50, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_51, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    type: "email",
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createLastName]]), $data.validationErrors.createLastName ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_47, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createLastName), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"form-group row\">\r\n                <label for=\"email\" class=\"col-sm-3 col-form-label\">Email</label>\r\n                <div class=\"col-sm-9\">\r\n                  <input type=\"email\" v-model=\"createEmail\" class=\"form-control\" id=\"createEmail\" name =\"createEmail\" placeholder=\"Email\">\r\n                  <small class=\"text-danger\" v-if=\"validationErrors.createEmail\">{{ validationErrors.createEmail }}</small>\r\n                </div>\r\n              </div> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_48, [_hoisted_49, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_50, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_51, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
-      return $data.createEmail = $event;
-    }),
-    "class": "form-control",
-    id: "createEmail",
-    name: "createEmail",
-    placeholder: "Email"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createEmail]]), $data.validationErrors.createEmail ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_52, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createEmail), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_53, [_hoisted_54, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_55, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_56, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
       return $data.createGender = $event;
     }),
     "class": "form-check-input",
@@ -22706,8 +22792,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "createGenderM",
     name: "createGender",
     value: "Muški"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelRadio, $data.createGender]]), _hoisted_57]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_58, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelRadio, $data.createGender]]), _hoisted_52]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_53, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
       return $data.createGender = $event;
     }),
     "class": "form-check-input",
@@ -22715,8 +22801,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "createGenderZ",
     name: "createGender",
     value: "Ženski"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelRadio, $data.createGender]]), _hoisted_59])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_60, [_hoisted_61, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_62, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelRadio, $data.createGender]]), _hoisted_54])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_55, [_hoisted_56, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_57, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    "onUpdate:modelValue": _cache[8] || (_cache[8] = function ($event) {
       return $data.createPhone = $event;
     }),
     type: "text",
@@ -22724,16 +22810,25 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "createPhone",
     name: "createPhone",
     placeholder: "Broj telefona"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createPhone]]), $data.validationErrors.createPhone ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_63, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createPhone), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_64, [_hoisted_65, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_66, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createPhone]]), $data.validationErrors.createPhone ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_58, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createPhone), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_59, [_hoisted_60, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_61, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
-    "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
-      return $data.createDateOfBirth = $event;
+    "onUpdate:modelValue": _cache[9] || (_cache[9] = function ($event) {
+      return $data.createDateOfPayment = $event;
     }),
     "class": "form-control",
-    id: "createDateOfBirth",
-    name: "createDateOfBirth",
-    placeholder: "Datum rođenja"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createDateOfBirth]]), $data.validationErrors.createDateOfBirth ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_67, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createDateOfBirth), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_68, [_hoisted_69, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_70, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    id: "createDateOfPayment",
+    name: "createdateOfPayment",
+    placeholder: "Datum članarine od"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createDateOfPayment]]), $data.validationErrors.createDateOfPayment ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_62, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createDateOfPayment), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_63, [_hoisted_64, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_65, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "onUpdate:modelValue": _cache[10] || (_cache[10] = function ($event) {
+      return $data.createDateExpiry = $event;
+    }),
+    "class": "form-control",
+    id: "createDateExpiry",
+    name: "createDateExpiry",
+    placeholder: "Datum članarine do"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createDateExpiry]]), $data.validationErrors.createDateExpiry ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_66, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createDateExpiry), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_67, [_hoisted_68, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_69, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "onUpdate:modelValue": _cache[11] || (_cache[11] = function ($event) {
       return $data.createmembershipFee = $event;
@@ -22742,7 +22837,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "createmembershipFee",
     name: "createmembershipFee",
     placeholder: "Iznos članarine"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createmembershipFee]]), $data.validationErrors.createmembershipFee ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_71, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createmembershipFee), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_72, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.createmembershipFee]]), $data.validationErrors.createmembershipFee ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_70, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrors.createmembershipFee), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_71, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     onClick: _cache[12] || (_cache[12] = function ($event) {
       return $options.closeModal('createClientModal');
@@ -22755,7 +22850,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[13] || (_cache[13] = function () {
       return $options.confirmCreate && $options.confirmCreate.apply($options, arguments);
     })
-  }, "Sačuvaj")])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal Edit Client "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_73, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_74, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_75, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_76, [_hoisted_77, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+  }, "Sačuvaj")])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal Edit Client "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_72, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_73, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_74, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_75, [_hoisted_76, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
     href: "#",
     onClick: _cache[14] || (_cache[14] = function ($event) {
       return $options.closeModal('editClientModal');
@@ -22763,7 +22858,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "btn-close",
     "data-bs-dismiss": "modal",
     "aria-label": "Close"
-  }, [].concat(_hoisted_79))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_80, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_81, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_82, [_hoisted_83, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_84, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, [].concat(_hoisted_78))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_79, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_80, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_81, [_hoisted_82, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_83, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "onUpdate:modelValue": _cache[15] || (_cache[15] = function ($event) {
       return $data.firstName = $event;
@@ -22772,7 +22867,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "firstName",
     name: "firstName",
     placeholder: "Ime"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.firstName]]), $data.validationErrorsEdit.firstName ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_85, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.firstName), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_86, [_hoisted_87, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_88, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.firstName]]), $data.validationErrorsEdit.firstName ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_84, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.firstName), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_85, [_hoisted_86, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_87, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "onUpdate:modelValue": _cache[16] || (_cache[16] = function ($event) {
       return $data.lastName = $event;
@@ -22781,35 +22876,26 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "lastName",
     name: "lastName",
     placeholder: "Prezime"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.lastName]]), $data.validationErrorsEdit.lastName ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_89, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.lastName), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_90, [_hoisted_91, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_92, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    type: "email",
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.lastName]]), $data.validationErrorsEdit.lastName ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_88, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.lastName), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"form-group row\">\r\n                <label for=\"email\" class=\"col-sm-3 col-form-label\">Email</label>\r\n                <div class=\"col-sm-9\">\r\n                  <input type=\"email\" v-model=\"email\" class=\"form-control\" id=\"email\" name =\"email\" placeholder=\"Email\">\r\n                  <small class=\"text-danger\" v-if=\"validationErrorsEdit.email\">{{ validationErrorsEdit.email }}</small>\r\n                </div>\r\n              </div> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_89, [_hoisted_90, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_91, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_92, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     "onUpdate:modelValue": _cache[17] || (_cache[17] = function ($event) {
-      return $data.email = $event;
-    }),
-    "class": "form-control",
-    id: "email",
-    name: "email",
-    placeholder: "Email"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.email]]), $data.validationErrorsEdit.email ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_93, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.email), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_94, [_hoisted_95, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_96, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_97, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[18] || (_cache[18] = function ($event) {
       return $data.gender = $event;
     }),
-    "class": "form-check-input ml-1",
+    "class": "form-check-input",
     type: "radio",
     id: "genderM",
     name: "genderM",
     value: "Muški"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelRadio, $data.gender]]), _hoisted_98]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_99, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[19] || (_cache[19] = function ($event) {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelRadio, $data.gender]]), _hoisted_93]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_94, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    "onUpdate:modelValue": _cache[18] || (_cache[18] = function ($event) {
       return $data.gender = $event;
     }),
-    "class": "form-check-input ml-1",
+    "class": "form-check-input",
     type: "radio",
     id: "genderZ",
     name: "genderZ",
     value: "Ženski"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelRadio, $data.gender]]), _hoisted_100])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_101, [_hoisted_102, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_103, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[20] || (_cache[20] = function ($event) {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelRadio, $data.gender]]), _hoisted_95])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_96, [_hoisted_97, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_98, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    "onUpdate:modelValue": _cache[19] || (_cache[19] = function ($event) {
       return $data.phone = $event;
     }),
     type: "text",
@@ -22817,16 +22903,25 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "phone",
     name: "phone",
     placeholder: "Broj telefona"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.phone]]), $data.validationErrorsEdit.phone ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_104, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.phone), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_105, [_hoisted_106, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_107, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.phone]]), $data.validationErrorsEdit.phone ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_99, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.phone), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"form-group row\">\r\n                <label for=\"dateOfBirth\" class=\"col-sm-3 col-form-label\">Datum rođenja</label>\r\n                <div class=\"col-sm-9\">\r\n                  <input type=\"text\" v-model=\"dateOfBirth\" class=\"form-control\" id=\"dateOfBirth\" name=\"dateOfBirth\" placeholder=\"Datum rođenja\">\r\n                  <small class=\"text-danger\" v-if=\"validationErrorsEdit.dateOfBirth\">{{ validationErrorsEdit.dateOfBirth }}</small>\r\n                </div>\r\n              </div> "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_100, [_hoisted_101, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_102, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
-    "onUpdate:modelValue": _cache[21] || (_cache[21] = function ($event) {
-      return $data.dateOfBirth = $event;
+    "onUpdate:modelValue": _cache[20] || (_cache[20] = function ($event) {
+      return $data.editDateOfPayment = $event;
     }),
     "class": "form-control",
-    id: "dateOfBirth",
-    name: "dateOfBirth",
-    placeholder: "Datum rođenja"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.dateOfBirth]]), $data.validationErrorsEdit.dateOfBirth ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_108, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.dateOfBirth), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_109, [_hoisted_110, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_111, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    id: "editDateOfPayment",
+    name: "editDateOfPayment",
+    placeholder: "Datum članarine od"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.editDateOfPayment]]), $data.validationErrorsEdit.editDateOfPayment ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_103, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.editDateOfPayment), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_104, [_hoisted_105, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_106, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "onUpdate:modelValue": _cache[21] || (_cache[21] = function ($event) {
+      return $data.editDateExpiry = $event;
+    }),
+    "class": "form-control",
+    id: "editDateExpiry",
+    name: "editDateExpiry",
+    placeholder: "Datum članarine do"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.editDateExpiry]]), $data.validationErrorsEdit.editDateExpiry ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_107, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.editDateExpiry), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_108, [_hoisted_109, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_110, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "onUpdate:modelValue": _cache[22] || (_cache[22] = function ($event) {
       return $data.membershipFee = $event;
@@ -22835,7 +22930,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "membershipFee",
     name: "membershipFee",
     placeholder: "Iznos članarine"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.membershipFee]]), $data.validationErrorsEdit.membershipFee ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_112, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.membershipFee), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_113, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.membershipFee]]), $data.validationErrorsEdit.membershipFee ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_111, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.validationErrorsEdit.membershipFee), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_112, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     onClick: _cache[23] || (_cache[23] = function ($event) {
       return $options.closeModal('editClientModal');
@@ -22848,7 +22943,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[24] || (_cache[24] = function () {
       return $options.confirmUpdate && $options.confirmUpdate.apply($options, arguments);
     })
-  }, "Sačuvaj izmene")])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal Delete Client "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_114, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_115, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_116, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_117, [_hoisted_118, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+  }, "Sačuvaj izmene")])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal Delete Client "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_113, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_114, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_115, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_116, [_hoisted_117, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
     href: "#",
     onClick: _cache[25] || (_cache[25] = function ($event) {
       return $options.closeModal('deleteClientModal');
@@ -22856,7 +22951,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "btn-close",
     "data-bs-dismiss": "modal",
     "aria-label": "Close"
-  }, [].concat(_hoisted_120))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_121, " Da li ste sigurni da želite da obrišete klijenta : " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.firstNameDelete) + " " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.lastNameDelete) + " ? ", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_122, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, [].concat(_hoisted_119))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_120, " Da li ste sigurni da želite da obrišete klijenta : " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.firstNameDelete) + " " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(this.lastNameDelete) + " ? ", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_121, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     onClick: _cache[26] || (_cache[26] = function ($event) {
       return $options.closeModal('deleteClientModal');
@@ -22869,7 +22964,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[27] || (_cache[27] = function () {
       return $options.confirmDelete && $options.confirmDelete.apply($options, arguments);
     })
-  }, "Obriši")])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal MembershipFee Client "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_123, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_124, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_125, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_126, [_hoisted_127, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+  }, "Obriši")])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal MembershipFee Client "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_122, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_123, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_124, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_125, [_hoisted_126, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
     href: "#",
     onClick: _cache[28] || (_cache[28] = function ($event) {
       return $options.closeModal('membershipFeeModal');
@@ -22877,7 +22972,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "btn-close",
     "data-bs-dismiss": "modal",
     "aria-label": "Close"
-  }, [].concat(_hoisted_129))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_130, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_131, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_132, [_hoisted_133, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_134, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, [].concat(_hoisted_128))]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_129, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_130, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_131, [_hoisted_132, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_133, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "onUpdate:modelValue": _cache[29] || (_cache[29] = function ($event) {
       return $data.membershipFeeRecord = $event;
@@ -22886,9 +22981,27 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     id: "membershipFeeRecord",
     name: "membershipFeeRecord",
     placeholder: "Iznos članarine"
-  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.membershipFeeRecord]]), $data.membershipFeeRecordErr ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_135, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.membershipFeeRecordErr), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_136, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.membershipFeeRecord]]), $data.membershipFeeRecordErr ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_134, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.membershipFeeRecordErr), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_135, [_hoisted_136, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_137, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "onUpdate:modelValue": _cache[30] || (_cache[30] = function ($event) {
+      return $data.membershipFeeDateOfPayment = $event;
+    }),
+    "class": "form-control",
+    id: "membershipFeeDateOfPayment",
+    name: "membershipFeeDateOfPayment",
+    placeholder: "Datum članarine od"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.membershipFeeDateOfPayment]]), $data.membershipFeeDateOfPaymentErr ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_138, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.membershipFeeDateOfPaymentErr), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_139, [_hoisted_140, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_141, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    type: "text",
+    "onUpdate:modelValue": _cache[31] || (_cache[31] = function ($event) {
+      return $data.membershipFeeDateExpiry = $event;
+    }),
+    "class": "form-control",
+    id: "membershipFeeDateExpiry",
+    name: "membershipFeeDateExpiry",
+    placeholder: "Datum članarine do"
+  }, null, 512 /* NEED_PATCH */), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.membershipFeeDateExpiry]]), $data.membershipFeeDateExpiryErr ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("small", _hoisted_142, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.membershipFeeDateExpiryErr), 1 /* TEXT */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_143, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
-    onClick: _cache[30] || (_cache[30] = function ($event) {
+    onClick: _cache[32] || (_cache[32] = function ($event) {
       return $options.closeModal('membershipFeeModal');
     }),
     "class": "btn btn-danger",
@@ -22896,7 +23009,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, "Otkaži"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "btn btn-success btn-fw",
-    onClick: _cache[31] || (_cache[31] = function () {
+    onClick: _cache[33] || (_cache[33] = function () {
       return $options.addMembershipFeeRecord && $options.addMembershipFeeRecord.apply($options, arguments);
     })
   }, "Evidentiraj članarinu")])])])])])])], 64 /* STABLE_FRAGMENT */);

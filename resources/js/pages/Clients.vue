@@ -42,7 +42,6 @@
                   <tr>
                     <th> Klijent </th>
                     <th> Ime i prezime </th>
-                    <th> Telefon </th>
                     <th> Plaćeni period </th>
                     <th> Iznos članarine (RSD) </th>
                     <th> Status </th>
@@ -59,7 +58,6 @@
                         {{ client.firstName }} {{ client.lastName }}
                       </router-link>
                     </td>
-                    <td class="pt-4"> {{ client.phone }}</td>
                     <td class="pt-4">{{ paidPeriod(client.dateOfPayment) }} - {{ paidPeriod(client.dateExpiry) }}</td>
                     <td class="pt-4">{{ client.membershipFee }}</td>
                     <td class="pt-4" :class="{'text-success': new Date() <= new Date(client.dateExpiry), 'text-danger': new Date() > new Date(client.dateExpiry)}">
@@ -111,13 +109,13 @@
                   <small class="text-danger" v-if="validationErrors.createLastName">{{ validationErrors.createLastName }}</small>
                 </div>
               </div>
-              <div class="form-group row">
+              <!-- <div class="form-group row">
                 <label for="email" class="col-sm-3 col-form-label">Email</label>
                 <div class="col-sm-9">
                   <input type="email" v-model="createEmail" class="form-control" id="createEmail" name ="createEmail" placeholder="Email">
                   <small class="text-danger" v-if="validationErrors.createEmail">{{ validationErrors.createEmail }}</small>
                 </div>
-              </div>
+              </div> -->
               <div class="form-group row">
                   <label for="gender" class="col-12 col-sm-3 col-form-label pt-4">Izaberite pol</label>
                   <div class="col-12 col-sm-9">
@@ -139,10 +137,17 @@
                 </div>
               </div>
               <div class="form-group row">
-                <label for="dateOfBirth" class="col-sm-3 col-form-label">Datum rođenja</label>
+                <label for="createDateOfPayment" class="col-sm-3 col-form-label">Datum članarine od :</label>
                 <div class="col-sm-9">
-                  <input type="text" v-model="createDateOfBirth" class="form-control" id="createDateOfBirth" name="createDateOfBirth" placeholder="Datum rođenja">
-                  <small class="text-danger" v-if="validationErrors.createDateOfBirth">{{ validationErrors.createDateOfBirth }}</small>
+                  <input type="text" v-model="createDateOfPayment" class="form-control" id="createDateOfPayment" name="createdateOfPayment" placeholder="Datum članarine od">
+                  <small class="text-danger" v-if="validationErrors.createDateOfPayment">{{ validationErrors.createDateOfPayment }}</small>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="createDateExpiry" class="col-sm-3 col-form-label">Datum članarine do :</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="createDateExpiry" class="form-control" id="createDateExpiry" name="createDateExpiry" placeholder="Datum članarine do">
+                  <small class="text-danger" v-if="validationErrors.createDateExpiry">{{ validationErrors.createDateExpiry }}</small>
                 </div>
               </div>
               <div class="form-group row">
@@ -186,26 +191,26 @@
                   <small class="text-danger" v-if="validationErrorsEdit.lastName">{{ validationErrorsEdit.lastName }}</small>
                 </div>
               </div>
-              <div class="form-group row">
+              <!-- <div class="form-group row">
                 <label for="email" class="col-sm-3 col-form-label">Email</label>
                 <div class="col-sm-9">
                   <input type="email" v-model="email" class="form-control" id="email" name ="email" placeholder="Email">
                   <small class="text-danger" v-if="validationErrorsEdit.email">{{ validationErrorsEdit.email }}</small>
                 </div>
-              </div>
+              </div> -->
               <div class="form-group row">
-              <label for="gender" class="col-sm-3 col-form-label pt-3">Izaberite pol</label>
-              <div class="col-sm-9 form-inline">
-                  <label class="form-check-label" for="genderM">
-                      <input v-model="gender" class="form-check-input ml-1" type="radio" id="genderM" name="genderM" value="Muški">
-                      <label for="createGenderM"> Muški</label>
-                  </label>
-                  <label class="form-check-label ml-4" for="genderZ">
-                      <input v-model="gender" class="form-check-input ml-1" type="radio" id="genderZ" name="genderZ" value="Ženski">
-                      <label for="createGenderZ"> Ženski</label>
-                  </label>
+                  <label for="gender" class="col-12 col-sm-3 col-form-label pt-4">Izaberite pol</label>
+                  <div class="col-12 col-sm-9">
+                      <div class="form-check form-check-inline">
+                          <input v-model="gender" class="form-check-input" type="radio" id="genderM" name="genderM" value="Muški">
+                          <label class="pt-2" for="genderM"> Muški</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input v-model="gender" class="form-check-input" type="radio" id="genderZ" name="genderZ" value="Ženski">
+                          <label class="pt-2" for="genderZ"> Ženski</label>
+                      </div>
+                  </div>
               </div>
-            </div>
               <div class="form-group row">
                 <label for="phone" class="col-sm-3 col-form-label">Broj telefona</label>
                 <div class="col-sm-9">
@@ -213,11 +218,25 @@
                   <small class="text-danger" v-if="validationErrorsEdit.phone">{{ validationErrorsEdit.phone }}</small>
                 </div>
               </div>
-              <div class="form-group row">
+              <!-- <div class="form-group row">
                 <label for="dateOfBirth" class="col-sm-3 col-form-label">Datum rođenja</label>
                 <div class="col-sm-9">
                   <input type="text" v-model="dateOfBirth" class="form-control" id="dateOfBirth" name="dateOfBirth" placeholder="Datum rođenja">
                   <small class="text-danger" v-if="validationErrorsEdit.dateOfBirth">{{ validationErrorsEdit.dateOfBirth }}</small>
+                </div>
+              </div> -->
+              <div class="form-group row">
+                <label for="editDateOfPayment" class="col-sm-3 col-form-label">Datum članarine od :</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="editDateOfPayment" class="form-control" id="editDateOfPayment" name="editDateOfPayment" placeholder="Datum članarine od">
+                  <small class="text-danger" v-if="validationErrorsEdit.editDateOfPayment">{{ validationErrorsEdit.editDateOfPayment }}</small>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="editDateExpiry" class="col-sm-3 col-form-label">Datum članarine do :</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="editDateExpiry" class="form-control" id="editDateExpiry" name="editDateExpiry" placeholder="Datum članarine do">
+                  <small class="text-danger" v-if="validationErrorsEdit.editDateExpiry">{{ validationErrorsEdit.editDateExpiry }}</small>
                 </div>
               </div>
               <div class="form-group row">
@@ -273,6 +292,19 @@
                   <small class="text-danger" v-if="membershipFeeRecordErr">{{ membershipFeeRecordErr }}</small>
                 </div>
               </div>
+              <div class="form-group row">
+                <label for="membershipFeeDateOfPayment" class="col-sm-3 col-form-label">Datum članarine od :</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="membershipFeeDateOfPayment" class="form-control" id="membershipFeeDateOfPayment" name="membershipFeeDateOfPayment" placeholder="Datum članarine od">
+                  <small class="text-danger" v-if="membershipFeeDateOfPaymentErr">{{ membershipFeeDateOfPaymentErr }}</small>
+                </div>
+              </div><div class="form-group row">
+                <label for="membershipFeeDateExpiry" class="col-sm-3 col-form-label">Datum članarine do :</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="membershipFeeDateExpiry" class="form-control" id="membershipFeeDateExpiry" name="membershipFeeDateExpiry" placeholder="Datum članarine do">
+                  <small class="text-danger" v-if="membershipFeeDateExpiryErr">{{ membershipFeeDateExpiryErr }}</small>
+                </div>
+              </div>
               <div class="modal-footer">
                 <button type="button" @click="closeModal('membershipFeeModal')" class="btn btn-danger" data-bs-dismiss="modal">Otkaži</button>
                 <button type="button" class="btn btn-success btn-fw" @click="addMembershipFeeRecord">Evidentiraj članarinu</button>
@@ -306,6 +338,10 @@ export default {
       createPhone: '',
       createDateOfBirth: '',
       createmembershipFee: '',
+      createDateOfPayment: '',
+      createDateExpiry: '',
+      membershipFeeDateOfPayment: '',
+      membershipFeeDateExpiry: '',
       firstName: '',
       lastName: '',
       email: '',
@@ -313,12 +349,16 @@ export default {
       phone: '',
       dateOfBirth: '',
       membershipFee: '',
+      editDateOfPayment: '',
+      editDateExpiry: '',
       firstNameDelete: '',
       lastNameDelete: '',
       searchClientQuery: '',
       membershipFeeClientId: '',
       membershipFeeRecord: '',
       membershipFeeRecordErr: '',
+      membershipFeeDateOfPaymentErr: '',
+      membershipFeeDateExpiryErr: '',
       validationErrors: {
         createFirstName: null,
         createLastName: null,
@@ -326,7 +366,9 @@ export default {
         createGender: null,
         createPhone: null,
         createmembershipFee: null,
-        createDateOfBirth: null
+        createDateOfBirth: null,
+        createDateOfPayment: null,
+        createDateExpiry: null,
       },
       validationErrorsEdit: {
         firstName: null,
@@ -335,7 +377,9 @@ export default {
         gender: null,
         phone: null,
         membershipFee: null,
-        dateOfBirth: null
+        dateOfBirth: null,
+        editDateOfPayment: null,
+        editDateExpiry: null
       }
     };
   },
@@ -396,16 +440,31 @@ export default {
     editAction(clientId) {
         axios.get('/api/clients/'+clientId)
         .then(response => {
+          
           this.firstName = response.data.firstName;
           this.lastName = response.data.lastName;
           this.email = response.data.email;
           this.gender = response.data.gender;
           this.phone = response.data.phone;
+
           if(response.data.dateOfBirth != null){
             this.dateOfBirth = moment(response.data.dateOfBirth).format('DD.MM.YYYY.');
           }else{
             this.dateOfBirth == "";
           }
+
+          if(response.data.dateOfPayment != null || response.data.dateOfPayment != ''){
+            this.editDateOfPayment = moment(response.data.dateOfPayment).format('DD.MM.YYYY.');
+          }else{
+            this.editDateOfPayment == "";
+          }
+
+           if(response.data.dateExpiry != null || response.data.dateExpiry != ''){
+            this.editDateExpiry = moment(response.data.dateExpiry).format('DD.MM.YYYY.');
+          }else{
+            this.editDateExpiry == "";
+          }
+
           this.membershipFee = response.data.membershipFee;
         })
         .catch(error => {
@@ -418,15 +477,32 @@ export default {
 
     addMembershipFeeRecord(){
       const membershipFeeRecord = parseFloat(this.membershipFeeRecord);
+      const datePattern = /^\d{2}\.\d{2}\.\d{4}\.$/;
+
       this.membershipFeeRecordErr = '';
+      this.membershipFeeDateOfPaymentErr =  '';
+      this.membershipFeeDateExpiryErr = '';
 
       if (isNaN(membershipFeeRecord) || membershipFeeRecord < 0 || membershipFeeRecord > 100000) {
         this.membershipFeeRecordErr = "Unesite validan iznos od 0 do 100000";
         return;
       }
+      
+      if (!datePattern.test(this.membershipFeeDateOfPayment)) {
+            this.membershipFeeDateOfPaymentErr = "Datum mora biti u formatu DD.MM.YYYY.";
+            return;
+      }
 
-      axios.post('/api/membershipFee/clients/' + this.membershipFeeClientId, {
-          membershipFeeRecord : this.membershipFeeRecord
+      if (!datePattern.test(this.membershipFeeDateExpiry)) {
+            this.membershipFeeDateExpiryErr = "Datum mora biti u formatu DD.MM.YYYY.";
+            return;
+      }
+
+      axios.post('/api/membershipFee/clients/' + this.membershipFeeClientId,
+        {
+          membershipFeeRecord : this.membershipFeeRecord,
+          dateOfPayment : this.membershipFeeDateOfPayment,
+          dateExpiry : this.membershipFeeDateExpiry
         })
         .then(response => {
           this.showSuccessAlert("Uspešno evidentirano" ,"Uspešno ste evidentirali članarinu!");
@@ -451,7 +527,9 @@ export default {
             gender: this.createGender,
             phone: this.createPhone,
             dateOfBirth: this.createDateOfBirth,
-            membershipFee: this.createmembershipFee
+            membershipFee: this.createmembershipFee,
+            dateOfPayment: this.createDateOfPayment,
+            dateExpiry: this.createDateExpiry
         };
 
         axios.post('/api/clients/add', addClientData)
@@ -483,7 +561,9 @@ export default {
             gender: this.gender,
             phone: this.phone,
             dateOfBirth: this.dateOfBirth,
-            membershipFee : this.membershipFee
+            membershipFee : this.membershipFee,
+            dateOfPayment : this.editDateOfPayment,
+            dateExpiry : this.editDateExpiry
         };
 
         axios.put('/api/clients/'+clientId, updatedClientData)
@@ -535,6 +615,7 @@ export default {
 
     validateForm() {
       let isValid = true;
+      const datePattern = /^\d{2}\.\d{2}\.\d{4}\.$/;
 
       if (!this.createFirstName || this.createFirstName.trim() === "") {
         this.validationErrors.createFirstName = "Polje Ime ne sme biti prazno.";
@@ -548,6 +629,20 @@ export default {
         isValid = false;
       } else {
           this.validationErrors.createLastName = null;
+      }
+
+      if (!datePattern.test(this.createDateOfPayment)) {
+            this.validationErrors.createDateOfPayment = "Datum mora biti u formatu DD.MM.YYYY.";
+            isValid = false;
+      } else {
+          this.validationErrors.createDateOfPayment = null;
+      }
+
+      if (!datePattern.test(this.createDateExpiry)) {
+            this.validationErrors.createDateExpiry = "Datum mora biti u formatu DD.MM.YYYY.";
+            isValid = false;
+      } else {
+          this.validationErrors.createDateExpiry = null;
       }
 
       // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -591,6 +686,7 @@ export default {
 
     validateFormEdit(){
       let isValid = true;
+      const datePattern = /^\d{2}\.\d{2}\.\d{4}\.$/;
 
       if (!this.firstName || this.firstName.trim() === "") {
         this.validationErrorsEdit.firstName = "Polje Ime ne sme biti prazno.";
@@ -631,8 +727,22 @@ export default {
       } else {
           this.validationErrorsEdit.membershipFee = null;
       }
-      
-      const regex = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}\.$/;
+
+      if (!datePattern.test(this.editDateOfPayment)) {
+            this.validationErrorsEdit.editDateOfPayment = "Datum mora biti u formatu DD.MM.YYYY.";
+            isValid = false;
+      } else {
+          this.validationErrorsEdit.editDateOfPayment = null;
+      }
+
+      if (!datePattern.test(this.editDateExpiry)) {
+            this.validationErrorsEdit.editDateExpiry = "Datum mora biti u formatu DD.MM.YYYY.";
+            isValid = false;
+      } else {
+          this.validationErrorsEdit.editDateExpiry = null;
+      }
+
+      //const regex = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}\.$/;
 
       // if(!regex.test(this.dateOfBirth)){
       //   this.validationErrorsEdit.dateOfBirth = "Polje Datum rođenja mora biti u formatu dd.mm.yyyy.";
@@ -680,7 +790,13 @@ export default {
       this.lastNameDelete = '',
       this.membershipFee = '',
       this.membershipFeeClientId = '',
-      this.membershipFeeRecord = ''
+      this.membershipFeeRecord = '',
+      this.createDateOfPayment = '',
+      this.createDateExpiry = '',
+      this.membershipFeeDateOfPayment = '',
+      this.membershipFeeDateExpiry = '',
+      this.editDateOfPayment = '',
+      this.editDateExpiry = ''
     },
 
     paidPeriod(period) {

@@ -26,23 +26,26 @@ class FeeRecords extends Model
 
     public static function addMembershipFeeForClient($request, $id)
     {
+        
         $currentMembershipFeeRecord = FeeRecords::where('clientID', $id)->latest('created_at')->first();
+        
         $currentDate = Carbon::now();
-
+        Carbon::createFromFormat('d.m.Y.', $request->dateOfPayment)->format('Y-m-d');
         if ($currentMembershipFeeRecord && $currentDate->between($currentMembershipFeeRecord->dateOfPayment, $currentMembershipFeeRecord->dateExpiry, true)) {
             FeeRecords::create([
                 'clientID' => $currentMembershipFeeRecord->clientID,
-                'dateOfPayment' => $currentMembershipFeeRecord->dateExpiry, 
-                'dateExpiry' => Carbon::parse($currentMembershipFeeRecord->dateExpiry)->addMonth()->toDateString(), 
+                'dateOfPayment' => Carbon::createFromFormat('d.m.Y.', $request->dateOfPayment)->format('Y-m-d'),
+                'dateExpiry' => Carbon::createFromFormat('d.m.Y.', $request->dateExpiry)->format('Y-m-d'),
                 'membershipFee' => $request->membershipFeeRecord,
             ]);
 
             $message = 'Članarina evidentirana';
         } else {
+            
             FeeRecords::create([
                 'clientID' => $id,
-                'dateOfPayment' => $currentDate->toDateString(), 
-                'dateExpiry' => $currentDate->copy()->addMonth()->toDateString(), 
+                'dateOfPayment' => Carbon::createFromFormat('d.m.Y.', $request->dateOfPayment)->format('Y-m-d'),
+                'dateExpiry' => Carbon::createFromFormat('d.m.Y.', $request->dateExpiry)->format('Y-m-d'),
                 'membershipFee' => $request->membershipFeeRecord,
             ]);
 

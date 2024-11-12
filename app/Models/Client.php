@@ -52,7 +52,7 @@ class Client extends Model
 
     public static function updateClient($id, $data){
         $client = self::find($id);
-
+        
         if($data['email'] != ""){
             $existingClientEmail = Client::where('email', $data['email'])
                                     ->where('id', '!=', $id)
@@ -62,12 +62,30 @@ class Client extends Model
                 return response()->json(['message' => 'E-mail već postoji'], 422);
             }
         }
-        
+
+        if($data['phone'] == null){
+            $data['phone'] = "";
+        }
+
         if($data['dateOfBirth'] != ""){
             $convertedDateOfBirth = Carbon::createFromFormat('d.m.Y.', $data['dateOfBirth'])->format('Y-m-d');
             $data['dateOfBirth'] = $convertedDateOfBirth;
         }else{
             $convertedDateOfBirth = null;
+        }
+
+        if($data['dateOfPayment'] != ""){
+            $convertedDateOfPayment = Carbon::createFromFormat('d.m.Y.', $data['dateOfPayment'])->format('Y-m-d');
+            $data['dateOfPayment'] = $convertedDateOfPayment;
+        }else{
+            $convertedDateOfPayment = null;
+        }
+
+        if($data['dateExpiry'] != ""){
+            $convertedDateExpiry = Carbon::createFromFormat('d.m.Y.', $data['dateExpiry'])->format('Y-m-d');
+            $data['dateExpiry'] = $convertedDateExpiry;
+        }else{
+            $convertedDateExpiry = null;
         }
   
         if (!$client) {
@@ -108,7 +126,7 @@ class Client extends Model
     }
 
     public static function addClient($request){
-       
+
         $request->validate([
             'firstName' => 'required|string|max:255',
             'lastName' => 'required|string|max:255',
@@ -118,9 +136,10 @@ class Client extends Model
             //'dateOfBirth' => 'required|date',
         ]);
         
-        if($request->input('email') != ""){
+        if($request->input('email') != "" || $request->input('email') != null){
+            dd(1);
             $existingClientEmail = Client::where('email', $request->input('email'))->first();
-        
+            
             if ($existingClientEmail) {
                 return response()->json(['message' => 'E-mail već postoji'], 422);
             }
@@ -132,11 +151,25 @@ class Client extends Model
         }else{
             $convertedDateOfBirth = null;
         }
+
+        if($request->input('dateOfPayment') != ""){
+            $dateOfPayment = $request->input('dateOfPayment');
+            $convertedDateOfPayment = Carbon::createFromFormat('d.m.Y.', $dateOfPayment)->format('Y-m-d');
+        }else{
+            $convertedDateOfPayment = null;
+        }
+
+        if($request->input('dateExpiry') != ""){
+            $dateExpiry = $request->input('dateExpiry');
+            $convertedDateExpiry = Carbon::createFromFormat('d.m.Y.', $dateExpiry)->format('Y-m-d');
+        }else{
+            $convertedDateExpiry = null;
+        }
         
         $client = Client::create([
             'firstName' => $request->input('firstName'),
             'lastName' => $request->input('lastName'),
-            'email' => $request->input('email') ?? "",
+            'email' => $request->input('email') ?? null,
             'gender' => $request->input('gender'),
             'phone' => $request->input('phone') ?? "",
             'dateOfBirth' => $convertedDateOfBirth,
@@ -148,8 +181,8 @@ class Client extends Model
     
             $feeRecord = FeeRecords::create([
                 'clientID' => $clientId,
-                'dateOfPayment' => now(),
-                'dateExpiry' => now()->addMonth(),
+                'dateOfPayment' => $convertedDateOfPayment,
+                'dateExpiry' => $convertedDateExpiry,
                 'membershipFee' => $request->input('membershipFee')
             ]);
     
